@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es-MX" class="no-js">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="js/i18n.js?v=65"></script>
+  <title>Casas, departamentos y terrenos en venta y renta en Metepec, Toluca y CDMX | Amábilis &amp; Espinosa</title>
+  <meta name="description" content="Catálogo de propiedades en venta y renta: casas en Metepec, departamentos en CDMX, terrenos en Ixtlahuaca y naves en Lerma. Filtra por zona, tipo y precio.">
+  <link rel="canonical" href="https://www.amabilisespinosa.com/propiedades">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Casas, departamentos y terrenos en venta y renta en Metepec, Toluca y CDMX | Amábilis &amp; Espinosa">
+  <meta property="og:description" content="Catálogo de propiedades en venta y renta: casas en Metepec, departamentos en CDMX, terrenos en Ixtlahuaca y naves en Lerma. Filtra por zona, tipo y precio.">
+  <meta name="theme-color" content="#0a1430">
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+  <meta property="og:image" content="https://www.amabilisespinosa.com/img/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- Google Tag Manager (ID en js/gtm.js) -->
+  <script src="js/gtm.js?v=65" data-page="propiedades"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://images.unsplash.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=65">
+  <link rel="stylesheet" href="css/mobile.css?v=65">
+</head>
+<body data-page="propiedades" data-header="dark">
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <nav class="breadcrumbs" data-fade><a href="index.html">Inicio</a>/<span>Propiedades</span></nav>
+        <h1 data-split>Propiedades <em>en venta</em> <br>y renta</h1>
+        <div class="page-hero__row">
+          <p class="lead" data-fade>Casas, departamentos, terrenos y espacios comerciales seleccionados en las mejores zonas del Estado de México y CDMX.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="filters">
+      <div class="container filters__inner">
+        <div class="chips" id="f-op" role="group" aria-label="Operación">
+          <button class="chip" data-value="">Todas</button>
+          <button class="chip" data-value="Venta">Venta</button>
+          <button class="chip" data-value="Renta">Renta</button>
+        </div>
+        <div class="filters__selects">
+          <label class="select"><span class="sr-only">Tipo</span><select id="f-tipo"><option value="">Tipo de propiedad</option></select></label>
+          <label class="select"><span class="sr-only">Zona</span><select id="f-zona"><option value="">Todas las zonas</option></select></label>
+          <label class="select"><span class="sr-only">Ordenar</span><select id="f-orden"><option value="">Ordenar por</option><option value="asc">Precio: menor a mayor</option><option value="desc">Precio: mayor a menor</option></select></label>
+        </div>
+      </div>
+    </div>
+
+    <section class="section" style="padding-top:48px">
+      <div class="container">
+        <p class="results-count" id="resultsCount" aria-live="polite"></p>
+        <div class="prop-grid" id="propGrid"></div>
+        <div class="empty" id="empty">
+          <h3>No hay propiedades con estos filtros</h3>
+          <p>Prueba con otra zona o tipo, o pídenos una búsqueda personalizada.</p>
+          <button class="btn btn--sm" id="resetFilters" style="margin-top:16px"><span class="btn__label"><span>Limpiar filtros</span><span>Limpiar filtros</span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        </div>
+      </div>
+    </section>
+    <section class="section cta">
+      <div class="cta__bg"><img src="https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=2000&q=80" alt="" loading="lazy" data-parallax="8"></div>
+      <div class="container" style="position:relative;text-align:center">
+        <span class="eyebrow" data-fade>¿No encuentras lo que buscas?</span>
+        <h2 class="cta__title" data-split style="max-width:14ch;margin-left:auto;margin-right:auto">Te lo <em>buscamos</em> nosotros</h2>
+        <p class="lead" data-fade style="margin:0 auto 40px">Cuéntanos qué necesitas y te enviamos opciones fuera de catálogo en menos de 24 horas.</p>
+        <div data-fade style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+          <a href="https://wa.me/527294985689?text=Hola%2C%20busco%20una%20propiedad%20con%20estas%20caracter%C3%ADsticas%3A" class="btn btn--gold" data-magnetic target="_blank" rel="noopener" data-loc="cta"><span class="btn__label"><span>Escríbenos por WhatsApp</span><span>Escríbenos por WhatsApp</span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a href="contacto.html" class="btn btn--ghost" data-magnetic ><span class="btn__label"><span>Contacto</span><span>Contacto</span></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="js/data.js?v=65"></script>
+  <script src="js/main.js?v=65"></script>
+</body>
+</html>
