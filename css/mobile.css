@@ -319,7 +319,7 @@ body.header-hidden .filters { top: 0; }
   .hero { align-items: center; height: auto; }
   .hero__content {
     display: flex; flex-direction: column; justify-content: center;
-    gap: clamp(18px, 3.8vh, 30px);
+    gap: clamp(20px, 4.2vh, 38px);
     padding-top: calc(var(--header-h) + 22px);
     padding-bottom: calc(28px + env(safe-area-inset-bottom));
   }
@@ -329,9 +329,17 @@ body.header-hidden .filters { top: 0; }
   .hero__badge span:last-child { line-height: 1.35; text-transform: none; letter-spacing: .01em; font-size: 12.5px; }
   .hero__title { line-height: 1.02; }
   .hero__row p { margin: 0; }
-  /* Buscador más compacto para que quepa con holgura */
-  .search__field { padding: 8px 13px; }
-  .search .btn { min-height: 48px; }
+  .search__field { padding: 10px 14px; }
+  .search .btn { min-height: 50px; margin-top: 0; }
+}
+
+/* Teléfonos: hero esencial (título de dos renglones y búsqueda de un campo) */
+@media (max-width: 620px) {
+  .hero__title { font-size: clamp(34px, 9.4vw, 44px) !important; }
+  .hero__row p { font-size: 14.5px; line-height: 1.5; }
+  .search { grid-template-columns: 1fr; padding: 7px; gap: 6px; }
+  /* Tipo y zona se eligen en Propiedades, con los filtros completos */
+  .search__field:nth-child(2), .search__field:nth-child(3) { display: none; }
 }
 
 /* Teléfonos cortos: reduce un punto la tipografía del hero */
