@@ -1204,14 +1204,15 @@ a.contact-item:hover b { color: var(--brand-gold); }
 .section--dark + .section--dark,
 .section--dark + .section.memoriam,
 .section.memoriam + .section--dark {
-  background: linear-gradient(180deg, #101f47 0%, #0a1430 55%);
+  background: linear-gradient(180deg, #15265a 0%, #0a1430 62%);
   padding-top: calc(clamp(80px, 12vw, 160px) + 16px);
 }
 .section--dark + .section--dark::before,
 .section--dark + .section.memoriam::before,
 .section.memoriam + .section--dark::before {
   content: ""; position: absolute; top: 0; left: var(--gutter); right: var(--gutter); height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(197, 163, 94, .6) 20%, rgba(197, 163, 94, .6) 80%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(197, 163, 94, .85) 18%, rgba(197, 163, 94, .85) 82%, transparent);
+  box-shadow: 0 1px 12px rgba(197, 163, 94, .18);
 }
 /* Dos bloques claros seguidos: mismo recurso en el azul de la marca */
 .section:not(.section--dark):not(.memoriam):not(.cta) + .section:not(.section--dark):not(.memoriam):not(.cta) {
@@ -1219,7 +1220,7 @@ a.contact-item:hover b { color: var(--brand-gold); }
 }
 .section:not(.section--dark):not(.memoriam):not(.cta) + .section:not(.section--dark):not(.memoriam):not(.cta)::before {
   content: ""; position: absolute; top: 0; left: var(--gutter); right: var(--gutter); height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(10, 20, 48, .16) 20%, rgba(10, 20, 48, .16) 80%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(10, 20, 48, .28) 18%, rgba(10, 20, 48, .28) 82%, transparent);
 }
 @media (max-width: 800px) {
   .section--dark + .section--dark,
