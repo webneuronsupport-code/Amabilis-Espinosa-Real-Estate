@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="js/i18n.js?v=96"></script>
+  <script src="js/i18n.js?v=101"></script>
   <title>Contacto | Agenda una asesoría inmobiliaria gratuita | Amábilis &amp; Espinosa</title>
   <meta name="description" content="Contáctanos por WhatsApp, teléfono o correo. Agenda una visita o una valuación gratuita de tu propiedad en Metepec, Toluca o CDMX.">
   <link rel="canonical" href="https://www.amabilisespinosa.com/contacto">
@@ -19,30 +19,43 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <!-- Google Tag Manager (ID en js/gtm.js) -->
-  <script src="js/gtm.js?v=96" data-page="contacto"></script>
+  <script src="js/gtm.js?v=101" data-page="contacto"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://images.unsplash.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=96">
-  <link rel="stylesheet" href="css/mobile.css?v=96">
+  <link rel="stylesheet" href="css/styles.css?v=101">
+  <link rel="stylesheet" href="css/mobile.css?v=101">
 </head>
 <body data-page="contacto" data-header="dark">
   <main>
-    <section class="page-hero">
+    <section class="page-hero contact-hero">
       <div class="container">
         <nav class="breadcrumbs" data-fade><a href="index.html">Inicio</a>/<span>Contacto</span></nav>
-        <h1 data-split>Hablemos de <br><em>tu propiedad</em></h1>
+        <span class="eyebrow" data-fade>Contacto</span>
+        <h1 data-split>Hablemos de <em>tu propiedad</em></h1>
+        <p class="lead" data-fade>Ya sea que quieras comprar, vender, rentar o invertir, un asesor te atenderá personalmente.</p>
+        <div class="contact-hero__actions" data-fade>
+          <a class="btn btn--gold" id="cWa" href="#" data-loc="contact-hero"><span class="btn__label"><span>Escríbenos por WhatsApp</span><span>Escríbenos por WhatsApp</span></span></a>
+          <a class="btn btn--ghost" id="cTel" href="#" data-loc="contact-hero"><span class="btn__label"><span>Llamar ahora</span><span>Llamar ahora</span></span></a>
+        </div>
       </div>
     </section>
-    <section class="section" style="padding-top:clamp(40px,6vw,80px)">
+
+    <section class="section contacto">
       <div class="container contact-grid">
-        <div>
-          <p class="lead" data-fade>Ya sea que quieras comprar, vender, rentar o invertir, un asesor te atenderá personalmente. Respondemos en menos de 30 minutos en horario hábil.</p>
+        <aside class="contact-panel" data-reveal>
+          <svg class="contact-panel__crest" viewBox="0 0 298.7 333.2" aria-hidden="true"><use href="img/logo-sprite.svg?v=2#crest"/></svg>
+          <span class="eyebrow">Canales directos</span>
+          <h2 class="contact-panel__title">Estamos a un mensaje <em>de distancia</em></h2>
           <div class="contact-list" id="contactList"></div>
-        </div>
-        <form class="form" data-lead="contact-page" data-fade novalidate>
+          <div class="contact-panel__hours" id="contactHours"></div>
+        </aside>
+
+        <form class="form form--card" data-lead="contact-page" data-fade novalidate>
+          <span class="eyebrow">Formulario</span>
           <h3>Envíanos un mensaje</h3>
+          <p class="form__intro">Cuéntanos qué buscas y te respondemos con opciones concretas.</p>
           <div class="form__row">
             <div class="field"><input id="cn" name="nombre" placeholder=" " required autocomplete="name"><label for="cn">Nombre*</label></div>
             <div class="field"><input id="ct" name="telefono" type="tel" placeholder=" " required autocomplete="tel"><label for="ct">Teléfono*</label></div>
@@ -56,14 +69,25 @@
         </form>
       </div>
     </section>
-    <div class="container" style="padding-bottom:clamp(80px,10vw,140px)">
-      <div class="map" data-reveal style="aspect-ratio:21/9"><iframe loading="lazy" title="Ubicación de la oficina" src="https://maps.google.com/maps?q=Metepec%2C%20Estado%20de%20M%C3%A9xico&z=13&output=embed"></iframe></div>
-    </div>
+
+    <section class="section section--cream mapa">
+      <div class="container">
+        <div class="mapa__wrap" data-reveal>
+          <div class="map"><iframe loading="lazy" title="Ubicación de la oficina" src="https://maps.google.com/maps?q=Metepec%2C%20Estado%20de%20M%C3%A9xico&z=13&output=embed"></iframe></div>
+          <div class="mapa__card">
+            <span class="eyebrow">Dónde estamos</span>
+            <b>Metepec, Estado de México</b>
+            <p>Atendemos Metepec, Toluca, Zinacantepec y Ciudad de México.</p>
+            <a class="link-arrow" id="cMapa" target="_blank" rel="noopener" href="https://maps.google.com/?q=Metepec%2C%20Estado%20de%20M%C3%A9xico">Cómo llegar</a>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="js/data.js?v=96"></script>
-  <script src="js/main.js?v=96"></script>
+  <script src="js/data.js?v=101"></script>
+  <script src="js/main.js?v=101"></script>
 </body>
 </html>

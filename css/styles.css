@@ -1231,3 +1231,82 @@ a.contact-item:hover b { color: var(--brand-gold); }
   }
 }
 /* === FIN separación entre secciones contiguas === */
+
+/* Separación entre párrafos de entrada consecutivos */
+.lead + .lead { margin-top: clamp(14px, 1.4vw, 20px); }
+
+/* === INICIO página de contacto === */
+.contact-hero .lead { max-width: 52ch; margin-top: 18px; }
+.contact-hero__actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+
+.contacto .contact-grid { grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); align-items: stretch; }
+
+.contact-panel {
+  position: relative; overflow: hidden; border-radius: 26px; background: var(--ink); color: var(--cream);
+  padding: clamp(30px, 3.4vw, 52px); box-shadow: 0 40px 80px -50px rgba(10,20,48,.75);
+}
+.contact-panel::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(110% 80% at 100% 0%, rgba(197,163,94,.16), transparent 60%);
+}
+.contact-panel__crest {
+  position: absolute; right: -50px; bottom: -70px; width: clamp(200px, 22vw, 300px); height: auto;
+  --crest-color: var(--brand-gold); opacity: .07; pointer-events: none;
+}
+.contact-panel > * { position: relative; z-index: 1; }
+.contact-panel .eyebrow { color: var(--gold-soft); }
+.contact-panel__title {
+  font-family: var(--f-display); font-weight: 400; font-size: clamp(24px, 2.2vw, 32px);
+  line-height: 1.12; margin: 14px 0 clamp(22px, 2.4vw, 32px); color: var(--cream);
+}
+.contact-panel__title em { color: var(--gold-soft); }
+.contact-panel .contact-list { margin-top: 0; border-top: 1px solid var(--line-light); }
+.contact-panel .contact-item {
+  grid-template-columns: 48px minmax(0, 1fr) auto; border-bottom: 1px solid var(--line-light); color: var(--cream);
+}
+.contact-panel .contact-item small { color: rgba(247,242,234,.55); }
+.contact-panel .contact-item b { color: var(--cream); }
+.contact-panel .contact-item__icon { width: 48px; height: 48px; box-shadow: inset 0 0 0 1px var(--line-light); color: var(--gold-soft); }
+.contact-panel .contact-item__cta {
+  display: inline-flex; align-items: center; gap: 7px; font-size: 11.5px; letter-spacing: .12em;
+  text-transform: uppercase; color: rgba(247,242,234,.5); transition: color .4s var(--ease), transform .4s var(--ease);
+}
+.contact-item__cta svg { width: 15px; height: 15px; }
+.contact-panel a.contact-item:hover .contact-item__cta { color: var(--gold-soft); transform: translateX(3px); }
+.contact-panel a.contact-item:hover .contact-item__icon { background: var(--brand-gold); color: var(--ink); box-shadow: none; }
+.contact-panel a.contact-item:hover b { color: var(--gold-soft); }
+.contact-panel__hours { margin-top: clamp(22px, 2.4vw, 32px); }
+.contact-panel__hours b { display: block; margin-top: 8px; font-family: var(--f-display); font-size: 20px; color: var(--cream); }
+
+.form--card {
+  background: #fff; border: 1px solid var(--line); border-radius: 26px;
+  padding: clamp(28px, 3.2vw, 48px); box-shadow: 0 30px 70px -50px rgba(10,20,48,.45);
+}
+.form--card h3 { margin: 12px 0 8px; }
+.form__intro { color: var(--muted); font-size: 14.5px; margin: 0 0 22px; }
+
+.mapa__wrap { position: relative; }
+.mapa__wrap .map { border-radius: 26px; overflow: hidden; aspect-ratio: 21 / 9; }
+.mapa__card {
+  position: absolute; left: clamp(20px, 3vw, 46px); bottom: clamp(20px, 3vw, 46px); max-width: 340px;
+  background: rgba(251,249,245,.96); backdrop-filter: blur(10px); border-radius: 20px;
+  padding: 24px 26px; box-shadow: 0 30px 60px -34px rgba(10,20,48,.55);
+}
+.mapa__card b { display: block; font-family: var(--f-display); font-size: 22px; margin: 10px 0 8px; color: var(--ink); }
+.mapa__card p { font-size: 14px; color: var(--muted); margin: 0 0 14px; }
+
+@media (max-width: 1000px) {
+  .contacto .contact-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .contact-hero__actions .btn { width: 100%; }
+  .contact-panel .contact-item { grid-template-columns: 44px minmax(0, 1fr); row-gap: 4px; }
+  .contact-panel .contact-item__icon { width: 44px; height: 44px; }
+  .contact-panel .contact-item__cta { grid-column: 2; justify-self: start; }
+  .mapa__wrap .map { aspect-ratio: 4 / 3; }
+  .mapa__card {
+    position: static; max-width: none; margin: 16px 0 0; padding: 22px 20px;
+    background: #fff; border: 1px solid var(--line); box-shadow: 0 20px 44px -34px rgba(10,20,48,.4);
+  }
+}
+/* === FIN página de contacto === */

@@ -452,14 +452,24 @@
     },
 
     contacto() {
+      const wa = waLink(), tel = `tel:${SITE.phone.replace(/\s/g, "")}`;
+      const mapa = `https://maps.google.com/?q=${encodeURIComponent(SITE.address)}`;
+      const set = (id, href) => { const el = $(id); if (el) el.href = href; };
+      set("#cWa", wa); set("#cTel", tel); set("#cMapa", mapa);
+
       $("#contactList").innerHTML = [
-        [I.wa, "WhatsApp", "Respuesta inmediata", waLink()],
-        [I.phone, "Teléfono", SITE.phone, `tel:${SITE.phone.replace(/\s/g, "")}`],
-        [I.mail, "Correo", SITE.email, `mailto:${SITE.email}`],
-        [I.pin, "Oficina", SITE.address, `https://maps.google.com/?q=${encodeURIComponent(SITE.address)}`],
-        [I.clock, "Horario", SITE.hours, null],
-      ].map(([ic, l, v, h]) => `<${h ? `a href="${h}" ${h.startsWith("http") ? 'target="_blank" rel="noopener"' : ""} data-loc="contact-page"` : "div"} class="contact-item" data-fade>
-          <span class="contact-item__icon">${ic}</span><span><small>${l}</small><b>${v}</b></span></${h ? "a" : "div"}>`).join("");
+        [I.wa, "WhatsApp", t("Respuesta inmediata", "Instant reply"), wa, t("Escribir", "Message")],
+        [I.phone, t("Teléfono", "Phone"), SITE.phone, tel, t("Llamar", "Call")],
+        [I.mail, t("Correo", "Email"), SITE.email, `mailto:${SITE.email}`, t("Escribir", "Write")],
+        [I.pin, t("Oficina", "Office"), SITE.address, mapa, t("Ver mapa", "View map")],
+      ].map(([ic, l, v, h, cta]) => `<a href="${h}" ${h.startsWith("http") ? 'target="_blank" rel="noopener"' : ""} data-loc="contact-page" class="contact-item" data-fade>
+          <span class="contact-item__icon">${ic}</span>
+          <span class="contact-item__text"><small>${l}</small><b>${v}</b></span>
+          <span class="contact-item__cta">${cta}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+        </a>`).join("");
+
+      const horas = $("#contactHours");
+      if (horas) horas.innerHTML = `<span class="eyebrow">${t("Horario de atención", "Opening hours")}</span><b>${SITE.hours}</b>`;
     },
   };
 
