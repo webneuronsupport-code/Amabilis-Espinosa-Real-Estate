@@ -314,17 +314,29 @@ body.header-hidden .filters { top: 0; }
   .contact-item a, .menu__meta a { padding: 6px 0; display: inline-block; }
 }
 
-/* Hero: bloque único centrado verticalmente en móvil */
+/* Hero: bloque único centrado, con aire uniforme entre sus partes */
 @media (max-width: 800px) {
-  .hero { align-items: center; }
+  .hero { align-items: center; height: auto; }
   .hero__content {
     display: flex; flex-direction: column; justify-content: center;
-    padding-top: calc(var(--header-h) + 16px);
-    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    gap: clamp(18px, 3.8vh, 30px);
+    padding-top: calc(var(--header-h) + 22px);
+    padding-bottom: calc(28px + env(safe-area-inset-bottom));
   }
-  .hero__badge { align-self: flex-start; }
-  .hero__title { margin-top: 14px !important; }
-  .hero__row { margin-top: 14px; }
-  .hero-reel { margin-top: 16px; }
-  .search { margin-top: 20px; }
+  .hero__content > * { margin-top: 0 !important; margin-bottom: 0 !important; }
+  .hero__badge { align-self: flex-start; padding: 10px 14px; gap: 8px; flex-wrap: nowrap; align-items: center; }
+  /* En una sola línea: en versales ocuparía dos renglones en pantallas de 375 px */
+  .hero__badge span:last-child { line-height: 1.35; text-transform: none; letter-spacing: .01em; font-size: 12.5px; }
+  .hero__title { line-height: 1.02; }
+  .hero__row p { margin: 0; }
+  /* Buscador más compacto para que quepa con holgura */
+  .search__field { padding: 8px 13px; }
+  .search .btn { min-height: 48px; }
+}
+
+/* Teléfonos cortos: reduce un punto la tipografía del hero */
+@media (max-width: 800px) and (max-height: 720px) {
+  .hero__title { font-size: clamp(34px, 10.5vw, 44px); }
+  .hero__row p { font-size: 14.5px; }
+  .hero__badge span:last-child { font-size: 11.5px; }
 }
