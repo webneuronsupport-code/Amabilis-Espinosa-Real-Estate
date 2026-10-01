@@ -1333,3 +1333,5 @@ a.contact-item:hover b { color: var(--brand-gold); }
 .socials a[data-red="tiktok"]:hover, .header__social a[data-red="tiktok"]:hover { background: #010101; color: #25F4EE; }
 .socials a[data-red="x"]:hover, .header__social a[data-red="x"]:hover { background: #010101; color: #fff; }
 /* === FIN redes sociales === */
+
+.hero__media video { object-position: 60% 50%; }
