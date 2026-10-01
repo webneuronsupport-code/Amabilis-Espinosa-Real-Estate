@@ -15,6 +15,8 @@ const SITE = {
   instagram: "https://www.instagram.com/",
   facebook: "https://www.facebook.com/",
   tiktok: "https://www.tiktok.com/",
+  youtube: "https://www.youtube.com/",
+  x: "https://x.com/",
 };
 
 const U = (id, w = 1600) =>

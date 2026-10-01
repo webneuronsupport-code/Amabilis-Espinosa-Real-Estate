@@ -1,5 +1,6 @@
-﻿/* =========================================================
-   AmÃ¡bilis & Espinosa â€” Sistema de diseÃ±o
+@charset "utf-8";
+/* =========================================================
+   Amábilis & Espinosa — Sistema de diseño
    ========================================================= */
 :root {
   --ink: #0a1430;
@@ -51,7 +52,7 @@ input, select, textarea { font: inherit; color: inherit; }
 .section--dark { background: var(--ink); color: var(--cream); }
 .section--cream { background: var(--cream); }
 
-/* ---------- TipografÃ­a ---------- */
+/* ---------- Tipografía ---------- */
 .eyebrow {
   display: inline-flex; align-items: center; gap: 12px;
   font-size: 12px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase;
@@ -67,7 +68,7 @@ h3, .h3 { font-size: clamp(26px, 2.6vw, 36px); }
 em, .serif-i { font-family: var(--f-display); font-style: italic; color: var(--gold); }
 .lead { font-size: clamp(17px, 1.4vw, 20px); color: var(--muted); max-width: 56ch; }
 .section--dark .lead { color: rgba(247, 242, 234, 0.7); }
-/* El recorte de la animaciÃ³n necesita aire para colas (g, y, p) y acentos */
+/* El recorte de la animación necesita aire para colas (g, y, p) y acentos */
 .split-line {
   display: inline-block; vertical-align: top; overflow: hidden;
   padding: 0.14em 0.04em 0.3em; margin: -0.14em -0.04em -0.3em;
@@ -194,7 +195,7 @@ em, .serif-i { font-family: var(--f-display); font-style: italic; color: var(--g
 .menu-open .header { color: var(--cream) !important; background: transparent !important; box-shadow: none !important; backdrop-filter: none; }
 @media (max-width: 1080px) { .nav, .header__actions .btn { display: none; } }
 
-/* ---------- MenÃº fullscreen ---------- */
+/* ---------- Menú fullscreen ---------- */
 .menu {
   position: fixed; inset: 0; z-index: 90; background: var(--ink); color: var(--cream);
   clip-path: inset(0 0 100% 0); visibility: hidden; overflow-y: auto;
@@ -222,13 +223,13 @@ em, .serif-i { font-family: var(--f-display); font-style: italic; color: var(--g
 /* ---------- Hero ---------- */
 .hero { position: relative; min-height: 100svh; color: var(--cream); display: flex; align-items: flex-end; overflow: hidden; background: var(--ink); }
 .hero__media { position: absolute; inset: 0; }
-.hero__media img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.15); }
+.hero__media img, .hero__media video { width: 100%; height: 100%; object-fit: cover; transform: scale(1.15); }
 .hero__media::after {
   content: ""; position: absolute; inset: 0;
   background: linear-gradient(180deg, rgba(10,20,48,.55) 0%, rgba(10,20,48,.15) 35%, rgba(10,20,48,.85) 100%);
 }
 
-/* Placa de reseÃ±as del hero */
+/* Placa de reseñas del hero */
 .hero__badge {
   display: inline-flex; align-items: center; gap: 14px; padding: 11px 20px 11px 16px; border-radius: 999px;
   background: rgba(10,20,48,.42); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
@@ -276,7 +277,11 @@ em, .serif-i { font-family: var(--f-display); font-style: italic; color: var(--g
 .marquee { background: var(--gold); color: var(--ink); overflow: hidden; padding: 22px 0; white-space: nowrap; }
 .marquee__track { display: inline-flex; gap: 48px; will-change: transform; }
 .marquee__item { display: inline-flex; align-items: center; gap: 48px; font-family: var(--f-display); font-size: clamp(28px, 3.4vw, 48px); font-style: italic; }
-.marquee__item::after { content: "âœ¦"; font-size: .5em; font-style: normal; }
+/* Separador: punto medio (escape ASCII, inmune a la codificación) */
+.marquee__item::after {
+  content: "\B7 "; flex: none; font-style: normal; font-size: .8em;
+  line-height: 1; opacity: .5;
+}
 
 /* ---------- Intro / About ---------- */
 .intro { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(40px, 8vw, 120px); align-items: center; }
@@ -339,7 +344,7 @@ em, .serif-i { font-family: var(--f-display); font-style: italic; color: var(--g
 .hscroll__progress { height: 1px; background: var(--line-light); margin: 56px var(--gutter) 0; position: relative; }
 .hscroll__progress i { position: absolute; inset: 0; background: var(--gold); transform-origin: left; transform: scaleX(0); }
 
-/* Escritorio: la secciÃ³n fija cabe completa en pantalla y las tarjetas se alinean con el tÃ­tulo */
+/* Escritorio: la sección fija cabe completa en pantalla y las tarjetas se alinean con el título */
 @media (min-width: 901px) and (min-height: 760px) {
   #destacadas {
     --card-h: clamp(290px, calc(100svh - 480px), 540px);
@@ -356,7 +361,7 @@ em, .serif-i { font-family: var(--f-display); font-style: italic; color: var(--g
   .hscroll .prop-card__media { aspect-ratio: auto; height: var(--card-h); }
   .hscroll__progress { margin: clamp(20px, 3svh, 40px) auto 0; width: calc(min(100%, var(--max)) - var(--gutter) * 2); }
 }
-/* Pantallas de poca altura: sin efecto fijo, cuadrÃ­cula normal para que todo se vea completo */
+/* Pantallas de poca altura: sin efecto fijo, cuadrícula normal para que todo se vea completo */
 @media (min-width: 901px) and (max-height: 759px) {
   .hscroll__track {
     display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px 28px;
@@ -531,7 +536,7 @@ em, .serif-i { font-family: var(--f-display); font-style: italic; color: var(--g
 .socials a { width: 44px; height: 44px; border-radius: 50%; box-shadow: inset 0 0 0 1px var(--line-light); display: grid; place-items: center; transition: background .4s, color .4s; }
 .socials a:hover { background: var(--gold); color: var(--ink); }
 .socials svg { width: 18px; height: 18px; }
-/* Logo oficial completo (versiÃ³n en negativo para fondo oscuro) */
+/* Logo oficial completo (versión en negativo para fondo oscuro) */
 .footer__logo {
   display: block; width: min(440px, 78%); height: auto; aspect-ratio: 596 / 506; margin: 72px auto 56px;
   --crest-color: var(--brand-gold);
@@ -649,7 +654,7 @@ em, .serif-i { font-family: var(--f-display); font-style: italic; color: var(--g
 .lightbox__count { position: absolute; bottom: 24px; left: 0; right: 0; text-align: center; color: rgba(247,242,234,.6); font-size: 13px; letter-spacing: .2em; }
 @media (max-width: 600px) { .lightbox__prev, .lightbox__next { top: auto; bottom: 16px; transform: none; } }
 
-/* ---------- ArtÃ­culo ---------- */
+/* ---------- Artículo ---------- */
 .article { max-width: 760px; margin: 0 auto; padding: clamp(56px, 8vw, 100px) var(--gutter); }
 .article p { font-size: 19px; line-height: 1.8; color: #333846; margin: 0 0 24px; }
 .article h2 { font-size: clamp(32px, 3.4vw, 46px); margin: 56px 0 18px; }
@@ -669,7 +674,7 @@ em, .serif-i { font-family: var(--f-display); font-style: italic; color: var(--g
 .stats--hero .stat b sup { color: var(--gold-soft); }
 .stats--hero .stat span { color: rgba(247,242,234,.72); }
 
-/* CertificaciÃ³n dentro del hero */
+/* Certificación dentro del hero */
 .about-cert { margin-top: 0;
   margin-top: clamp(28px, 4vw, 44px); display: flex; align-items: center; justify-content: space-between;
   gap: clamp(20px, 3vw, 48px); flex-wrap: wrap;
@@ -716,7 +721,7 @@ em, .serif-i { font-family: var(--f-display); font-style: italic; color: var(--g
 @media (max-width: 400px) { .lang--header { display: none; } }
 @media (max-width: 800px) { .lang--header { height: 42px; } }
 
-/* ---------- MenÃºs desplegables personalizados ---------- */
+/* ---------- Menús desplegables personalizados ---------- */
 .dd-native { position: absolute !important; opacity: 0 !important; pointer-events: none !important; width: 1px !important; height: 1px !important; overflow: hidden; }
 .dd__btn {
   display: flex; align-items: center; justify-content: space-between; gap: 14px; width: 100%;
@@ -850,7 +855,7 @@ em, .serif-i { font-family: var(--f-display); font-style: italic; color: var(--g
   .reel__close { width: 48px; height: 48px; }
 }
 
-/* ---------- Placa de reseÃ±as del hero ---------- */
+/* ---------- Placa de reseñas del hero ---------- */
 .hero__badge {
   display: inline-flex; align-items: center; gap: 14px; padding: 11px 20px 11px 16px; border-radius: 999px;
   background: rgba(10,20,48,.42); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
@@ -1310,3 +1315,21 @@ a.contact-item:hover b { color: var(--brand-gold); }
   }
 }
 /* === FIN página de contacto === */
+
+/* Con seis redes en la barra, el enlace legal se recoge en pantallas medianas
+   (sigue disponible en el menú y en el pie) */
+@media (max-width: 1300px) { .header__legal { display: none; } }
+
+/* === INICIO redes sociales: color de marca solo al pasar el cursor === */
+/* En reposo se mantienen monocromas, como el resto de la interfaz. */
+.socials a[data-red], .header__social a[data-red] {
+  transition: color .35s var(--ease), background .35s var(--ease), box-shadow .35s var(--ease), opacity .3s;
+}
+.socials a[data-red]:hover, .header__social a[data-red]:hover { color: #fff; opacity: 1; box-shadow: none; }
+.socials a[data-red="whatsapp"]:hover, .header__social a[data-red="whatsapp"]:hover { background: #25D366; }
+.socials a[data-red="facebook"]:hover, .header__social a[data-red="facebook"]:hover { background: #1877F2; }
+.socials a[data-red="instagram"]:hover, .header__social a[data-red="instagram"]:hover { background: linear-gradient(45deg, #F58529, #DD2A7B 55%, #8134AF); }
+.socials a[data-red="youtube"]:hover, .header__social a[data-red="youtube"]:hover { background: #FF0000; }
+.socials a[data-red="tiktok"]:hover, .header__social a[data-red="tiktok"]:hover { background: #010101; color: #25F4EE; }
+.socials a[data-red="x"]:hover, .header__social a[data-red="x"]:hover { background: #010101; color: #fff; }
+/* === FIN redes sociales === */

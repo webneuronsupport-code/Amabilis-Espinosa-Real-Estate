@@ -60,6 +60,8 @@
     ig: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".8" fill="currentColor"/></svg>',
     fb: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v2H8v4h2v8h4v-8h3l1-4h-4V8Z"/></svg>',
     tt: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3a4.5 4.5 0 0 0 4.5 4.5v3.3a7.7 7.7 0 0 1-4.5-1.4v6.3A6.3 6.3 0 1 1 10.2 9.4v3.4a3 3 0 1 0 2.9 3V3h3.4Z"/></svg>',
+    yt: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8ZM10 15V9l5.2 3L10 15Z"/></svg>',
+    x: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 3h3.1l-6.8 7.8L21.8 21h-6.2l-4.9-6.4L5.1 21H2l7.3-8.3L2.4 3h6.4l4.4 5.8L17.5 3Zm-1.1 16.1h1.7L7.7 4.8H5.9l10.5 14.3Z"/></svg>',
   };
   window.ICONS = I;
 
@@ -94,6 +96,18 @@
   });
 
   /* ---------- Layout compartido ---------- */
+
+  // Redes sociales del negocio (un solo lugar para los tres bloques)
+  const redes = (donde = "header") => [
+    ["WhatsApp", "whatsapp", waLink(), I.wa],
+    ["Facebook", "facebook", SITE.facebook, I.fb],
+    ["Instagram", "instagram", SITE.instagram, I.ig],
+    ["YouTube", "youtube", SITE.youtube, I.yt],
+    ["TikTok", "tiktok", SITE.tiktok, I.tt],
+    ["X", "x", SITE.x, I.x],
+  ].filter(([, , url]) => url).map(([nombre, red, url, icono]) =>
+    `<a href="${url}" target="_blank" rel="noopener" aria-label="${nombre}" data-red="${red}" data-loc="${donde}">${icono}</a>`).join("");
+
   const NAV = [
     ["Inicio", "index.html", "home"],
     ["Propiedades", "propiedades.html", "propiedades"],
@@ -115,11 +129,7 @@
       </nav>
       <div class="header__actions">
         <a href="aviso-de-privacidad.html" class="header__legal">Política de privacidad</a>
-        <div class="header__social">
-          <a href="${SITE.instagram}" target="_blank" rel="noopener" aria-label="Instagram">${I.ig}</a>
-          <a href="${SITE.facebook}" target="_blank" rel="noopener" aria-label="Facebook">${I.fb}</a>
-          <a href="${SITE.tiktok}" target="_blank" rel="noopener" aria-label="TikTok">${I.tt}</a>
-        </div>
+        <div class="header__social">${redes()}</div>
         ${langSwitch("header")}
         <button class="burger" aria-label="Abrir menú" aria-expanded="false"><span></span><span></span></button>
       </div>
@@ -135,11 +145,7 @@
       <div class="menu__side">
         <div class="menu__img"><img src="${U(IMG.living1, 900)}" alt="Interior de residencia de lujo" loading="lazy"></div>
         ${langSwitch("menu")}
-        <div class="socials socials--menu">
-          <a href="${SITE.instagram}" target="_blank" rel="noopener" aria-label="Instagram">${I.ig}</a>
-          <a href="${SITE.facebook}" target="_blank" rel="noopener" aria-label="Facebook">${I.fb}</a>
-          <a href="${SITE.tiktok}" target="_blank" rel="noopener" aria-label="TikTok">${I.tt}</a>
-        </div>
+        <div class="socials socials--menu">${redes("menu")}</div>
         <div class="menu__meta">
           <a href="aviso-de-privacidad.html">Política de privacidad</a>
           <a href="tel:${SITE.phone.replace(/\s/g, "")}" data-loc="menu">${SITE.phone}</a>
@@ -159,11 +165,7 @@
         <div class="footer__brand">
           ${logo}
           <p>Servicio inmobiliario personalizado para comprar, vender y rentar propiedades en el Estado de México y CDMX.</p>
-          <div class="socials">
-            <a href="${SITE.instagram}" target="_blank" rel="noopener" aria-label="Instagram">${I.ig}</a>
-            <a href="${SITE.facebook}" target="_blank" rel="noopener" aria-label="Facebook">${I.fb}</a>
-            <a href="${SITE.tiktok}" target="_blank" rel="noopener" aria-label="TikTok">${I.tt}</a>
-          </div>
+          <div class="socials">${redes("footer")}</div>
         </div>
         <div><h4>Explora</h4><ul>${NAV.map(([t, h]) => `<li><a href="${h}">${t}</a></li>`).join("")}</ul></div>
         <div><h4>Zonas</h4><ul>${ZONES.map((z) => `<li><a href="propiedades.html?zona=${encodeURIComponent(z.name)}">${z.name}</a></li>`).join("")}</ul></div>
