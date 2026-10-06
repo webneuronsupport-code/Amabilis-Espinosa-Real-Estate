@@ -42,6 +42,7 @@
     "Inicio": "Home",
     "Propiedades": "Properties",
     "Nosotros": "About",
+    "Te abrimos WhatsApp con tu solicitud lista: solo pulsa enviar.": "We opened WhatsApp with your request ready: just hit send.",
     "Correo electrónico*": "Email address*",
     "Ya sea que quieras comprar, vender, rentar o invertir, un asesor te atenderá personalmente.": "Whether you want to buy, sell, rent or invest, an advisor will assist you personally.",
     "Escríbenos por WhatsApp": "Message us on WhatsApp",

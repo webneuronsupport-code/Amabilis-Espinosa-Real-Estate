@@ -288,12 +288,21 @@
           delivery: entregado ? "email" : "whatsapp",
         });
 
+        // El mensaje de éxito cambia según lo que realmente ocurrió
+        const ok = $(".form__ok", f);
+        if (ok) {
+          if (!ok.dataset.original) ok.dataset.original = ok.textContent.trim();
+          ok.textContent = entregado
+            ? ok.dataset.original
+            : t("Te abrimos WhatsApp con tu solicitud lista: solo pulsa enviar.",
+                "We opened WhatsApp with your request ready: just hit send.");
+        }
+
         f.classList.add("is-sent");
         f.reset();
 
         if (entregado) {
           // Atajo opcional para quien prefiera seguir por WhatsApp
-          const ok = $(".form__ok", f);
           if (ok && !$(".form__wa", ok)) {
             const a = document.createElement("a");
             a.className = "form__wa";
