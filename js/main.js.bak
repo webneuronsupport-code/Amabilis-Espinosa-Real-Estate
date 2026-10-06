@@ -241,24 +241,12 @@
   /* ---------- Formularios → WhatsApp + evento de conversión ---------- */
   const bindForms = () =>
     $$("form[data-lead]").forEach((f) => {
-      // Campo invisible: los robots lo rellenan y así se descartan
-      if (!f.querySelector('[name="web"]')) {
-        const trampa = document.createElement("input");
-        trampa.type = "text"; trampa.name = "web"; trampa.tabIndex = -1;
-        trampa.autocomplete = "off"; trampa.setAttribute("aria-hidden", "true");
-        trampa.style.cssText = "position:absolute;left:-9999px;width:1px;height:1px;opacity:0";
-        f.appendChild(trampa);
-      }
-
-      f.addEventListener("submit", async (e) => {
+      f.addEventListener("submit", (e) => {
         e.preventDefault();
         if (!f.reportValidity()) return;
-
         const d = Object.fromEntries(new FormData(f));
-        const boton = $("button[type=submit]", f);
-        const etiqueta = boton ? boton.innerHTML : "";
-
-        const mensajeWA = [
+        track("generate_lead", { form_location: f.dataset.lead, lead_interest: d.interes || (d.propiedad ? "Propiedad" : "") });
+        const msg = [
           t(`Hola, soy ${d.nombre || ""}.`, `Hi, I'm ${d.nombre || ""}.`),
           d.propiedad ? t(`Me interesa: ${d.propiedad}.`, `I'm interested in: ${d.propiedad}.`) : "",
           d.interes ? t(`Busco: ${d.interes}.`, `Looking to: ${T.tr(d.interes)}.`) : "",
@@ -266,47 +254,10 @@
           `${t("Tel", "Phone")}: ${d.telefono || ""}`,
           d.email ? `${t("Correo", "Email")}: ${d.email}` : "",
         ].filter(Boolean).join("\n");
-
-        if (boton) { boton.disabled = true; boton.textContent = t("Enviando…", "Sending…"); }
-
-        let entregado = false;
-        try {
-          const r = await fetch("enviar.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ ...d, origen: f.dataset.lead, pagina: location.href }),
-          });
-          entregado = r.ok && (await r.json().catch(() => ({}))).ok === true;
-        } catch (err) {
-          entregado = false; // sin PHP (desarrollo local) o sin red
-        }
-
-        if (boton) { boton.disabled = false; boton.innerHTML = etiqueta; }
-        track("generate_lead", {
-          form_location: f.dataset.lead,
-          lead_interest: d.interes || (d.propiedad ? "Propiedad" : ""),
-          delivery: entregado ? "email" : "whatsapp",
-        });
-
         f.classList.add("is-sent");
+        // TODO: conectar a un CRM o servicio de formularios si el cliente lo requiere
+        window.open(waLink(msg), "_blank", "noopener");
         f.reset();
-
-        if (entregado) {
-          // Atajo opcional para quien prefiera seguir por WhatsApp
-          const ok = $(".form__ok", f);
-          if (ok && !$(".form__wa", ok)) {
-            const a = document.createElement("a");
-            a.className = "form__wa";
-            a.href = waLink(mensajeWA);
-            a.target = "_blank"; a.rel = "noopener";
-            a.dataset.loc = "form-ok";
-            a.textContent = t("¿Prefieres WhatsApp? Escríbenos ahora", "Prefer WhatsApp? Message us now");
-            ok.appendChild(a);
-          }
-        } else {
-          // Si el correo no salió, el contacto no se pierde: se abre WhatsApp
-          window.open(waLink(mensajeWA), "_blank", "noopener");
-        }
       });
     });
 
@@ -428,7 +379,6 @@
           </div>
           <form class="form" data-lead="property" novalidate>
             <input type="hidden" name="propiedad" value="${p.title}">
-            <input type="hidden" name="propiedad_id" value="${p.id}">
             <div class="field"><input id="pn" name="nombre" placeholder=" " required><label for="pn">Nombre</label></div>
             <div class="field"><input id="pt" name="telefono" type="tel" placeholder=" " required><label for="pt">Teléfono</label></div>
             <button class="btn btn--block" type="submit"><span class="btn__label"><span>Solicitar información</span><span>Solicitar información</span></span>${I.arrow}</button>

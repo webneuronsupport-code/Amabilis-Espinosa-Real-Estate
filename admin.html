@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Panel de propiedades | Amábilis &amp; Espinosa</title>
+  <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/admin.css?v=124">
+</head>
+<body>
+  <!-- ======================= ACCESO ======================= -->
+  <section class="acceso" id="vistaAcceso" hidden>
+    <form class="acceso__caja" id="formAcceso">
+      <svg class="acceso__crest" viewBox="0 0 298.7 333.2" aria-hidden="true"><use href="img/logo-sprite.svg?v=2#crest"/></svg>
+      <h1>Panel de propiedades</h1>
+      <p class="acceso__nota">Entra con el correo y la contraseña que te compartimos.</p>
+      <label class="campo"><span>Correo</span><input type="email" id="correo" autocomplete="username" required></label>
+      <label class="campo"><span>Contraseña</span><input type="password" id="clave" autocomplete="current-password" required></label>
+      <button class="btn btn--oro" type="submit">Entrar</button>
+      <p class="aviso" id="avisoAcceso" role="alert" hidden></p>
+    </form>
+  </section>
+
+  <!-- ======================= PANEL ======================== -->
+  <div id="vistaPanel" hidden>
+    <header class="barra">
+      <div class="barra__marca">
+        <svg class="barra__crest" viewBox="0 0 298.7 333.2" aria-hidden="true"><use href="img/logo-sprite.svg?v=2#crest"/></svg>
+        <div><b>Panel de propiedades</b><small id="sesionCorreo"></small></div>
+      </div>
+      <div class="barra__acciones">
+        <a class="btn btn--plano" href="index.html" target="_blank" rel="noopener">Ver el sitio</a>
+        <button class="btn btn--plano" id="btnSalir" type="button">Cerrar sesión</button>
+      </div>
+    </header>
+
+    <!-- Listado -->
+    <main class="contenido" id="vistaLista">
+      <div class="cabecera">
+        <div>
+          <h2>Propiedades</h2>
+          <p class="cabecera__nota" id="resumen">Cargando…</p>
+        </div>
+        <button class="btn btn--oro" id="btnNueva" type="button">+ Nueva propiedad</button>
+      </div>
+
+      <div class="filtros">
+        <input type="search" id="buscar" placeholder="Buscar por nombre, zona o tipo…" aria-label="Buscar propiedades">
+        <div class="segmentos" role="group" aria-label="Filtrar por estado">
+          <button type="button" class="segmento es-activo" data-estado="todas">Todas</button>
+          <button type="button" class="segmento" data-estado="publicadas">Publicadas</button>
+          <button type="button" class="segmento" data-estado="borradores">Borradores</button>
+        </div>
+      </div>
+
+      <div class="lista" id="lista"></div>
+    </main>
+
+    <!-- Editor -->
+    <main class="contenido" id="vistaEditor" hidden>
+      <div class="cabecera">
+        <div>
+          <button class="volver" id="btnVolver" type="button">← Volver al listado</button>
+          <h2 id="tituloEditor">Editar propiedad</h2>
+        </div>
+        <div class="cabecera__botones">
+          <button class="btn btn--peligro" id="btnEliminar" type="button">Eliminar</button>
+          <button class="btn btn--oro" id="btnGuardar" type="button">Guardar cambios</button>
+        </div>
+      </div>
+
+      <form id="formProp" class="formulario">
+        <section class="bloque">
+          <h3>Fotografías</h3>
+          <p class="pista">Arrastra las imágenes aquí o pulsa para elegirlas. La primera es la portada; puedes reordenarlas arrastrándolas.</p>
+          <div class="soltar" id="zonaSoltar" tabindex="0" role="button" aria-label="Agregar fotografías">
+            <b>Arrastra tus fotos</b><span>o pulsa para buscarlas en tu equipo · se optimizan solas al subirlas</span>
+            <input type="file" id="archivos" accept="image/*" multiple hidden>
+          </div>
+          <div class="galeria" id="galeria"></div>
+          <p class="aviso" id="avisoFotos" hidden></p>
+        </section>
+
+        <section class="bloque">
+          <h3>Información principal</h3>
+          <div class="rejilla">
+            <label class="campo campo--ancho"><span>Nombre de la propiedad *</span><input id="f-title" required></label>
+            <label class="campo"><span>Operación</span><select id="f-operation"><option>Venta</option><option>Renta</option></select></label>
+            <label class="campo"><span>Tipo</span><select id="f-type"><option>Casa</option><option>Departamento</option><option>Terreno</option><option>Comercial</option></select></label>
+            <label class="campo"><span>Zona</span><input id="f-zone" list="zonas" placeholder="Metepec"><datalist id="zonas"></datalist></label>
+            <label class="campo"><span>Ubicación (como se muestra)</span><input id="f-location" placeholder="Metepec, Estado de México"></label>
+            <label class="campo"><span>Precio en pesos *</span><input id="f-price" type="number" min="0" step="1000" required></label>
+            <label class="campo"><span>Etiqueta</span><input id="f-tag" placeholder="Nuevo, Exclusiva, Preventa…"></label>
+          </div>
+        </section>
+
+        <section class="bloque">
+          <h3>Características</h3>
+          <div class="rejilla rejilla--numeros">
+            <label class="campo"><span>Recámaras</span><input id="f-beds" type="number" min="0" step="1"></label>
+            <label class="campo"><span>Baños</span><input id="f-baths" type="number" min="0" step="0.5"></label>
+            <label class="campo"><span>Estacionamientos</span><input id="f-parking" type="number" min="0" step="1"></label>
+            <label class="campo"><span>Construcción (m²)</span><input id="f-built" type="number" min="0" step="1"></label>
+            <label class="campo"><span>Terreno (m²)</span><input id="f-land" type="number" min="0" step="1"></label>
+          </div>
+          <label class="campo"><span>Amenidades</span>
+            <input id="f-amenidad" placeholder="Escribe una y pulsa Enter (ej. Roof garden)">
+          </label>
+          <div class="etiquetas" id="amenidades"></div>
+        </section>
+
+        <section class="bloque">
+          <h3>Textos</h3>
+          <label class="campo"><span>Resumen corto (aparece en las tarjetas)</span><textarea id="f-summary" rows="2"></textarea></label>
+          <label class="campo"><span>Descripción completa</span><textarea id="f-description" rows="7"></textarea></label>
+        </section>
+
+        <section class="bloque">
+          <h3>Publicación</h3>
+          <div class="interruptores">
+            <label class="interruptor"><input type="checkbox" id="f-published" checked><span>Visible en el sitio</span></label>
+            <label class="interruptor"><input type="checkbox" id="f-featured"><span>Destacada en la portada</span></label>
+            <label class="campo campo--corto"><span>Orden</span><input id="f-position" type="number" step="1" min="0"></label>
+          </div>
+          <p class="pista">Si la quitas de «Visible en el sitio» se guarda como borrador: nadie la ve, pero no se pierde.</p>
+        </section>
+
+        <details class="bloque bloque--plegable">
+          <summary><h3>Versión en inglés <small>(opcional)</small></h3></summary>
+          <p class="pista">Si lo dejas vacío, el sitio en inglés mostrará el texto en español.</p>
+          <label class="campo"><span>Nombre</span><input id="f-en-title"></label>
+          <label class="campo"><span>Resumen</span><textarea id="f-en-summary" rows="2"></textarea></label>
+          <label class="campo"><span>Descripción</span><textarea id="f-en-description" rows="5"></textarea></label>
+        </details>
+
+        <p class="aviso" id="avisoForm" role="alert" hidden></p>
+      </form>
+    </main>
+  </div>
+
+  <!-- Confirmación -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal__caja" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+      <h3 id="modalTitulo">¿Eliminar la propiedad?</h3>
+      <p id="modalTexto"></p>
+      <div class="modal__botones">
+        <button class="btn btn--plano" id="modalCancelar" type="button">Cancelar</button>
+        <button class="btn btn--peligro" id="modalAceptar" type="button">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="brindis" id="brindis" hidden></div>
+
+  <!-- Falta configurar Supabase -->
+  <section class="acceso" id="vistaConfig" hidden>
+    <div class="acceso__caja">
+      <h1>Falta conectar la base de datos</h1>
+      <p class="acceso__nota">Abre <code>js/supabase-config.js</code> y pega la URL del proyecto y la clave pública (anon) de Supabase. Los pasos completos están en <code>GUIA-PANEL.md</code>.</p>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/supabase-config.js?v=124"></script>
+  <script src="js/admin-demo.js?v=124"></script>
+  <script src="js/admin.js?v=124"></script>
+</body>
+</html>

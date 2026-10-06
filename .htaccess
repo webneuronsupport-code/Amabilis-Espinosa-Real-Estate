@@ -1,0 +1,87 @@
+# =========================================================
+#  Amábilis & Espinosa — Configuración del servidor (Hostinger / Apache)
+# =========================================================
+
+# ---------- Siempre HTTPS y con "www" ----------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # http -> https
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+  # dominio.com -> www.dominio.com
+  # (las etiquetas canonical del sitio apuntan a www: deben coincidir o Google
+  #  recibe señales contradictorias)
+  RewriteCond %{HTTP_HOST} !^www\. [NC]
+  RewriteCond %{HTTP_HOST} !^localhost [NC]
+  RewriteRule ^(.*)$ https://www.%{HTTP_HOST}/$1 [R=301,L]
+
+  # Permite escribir las direcciones sin ".html"
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME}\.html -f
+  RewriteRule ^(.+?)/?$ $1.html [L]
+</IfModule>
+
+# ---------- Página de error ----------
+ErrorDocument 404 /404.html
+
+# ---------- Compresión ----------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/x-javascript
+  AddOutputFilterByType DEFLATE application/json image/svg+xml
+</IfModule>
+
+# ---------- Caché del navegador ----------
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # Imágenes y vídeo: un año (los nombres no cambian)
+  ExpiresByType image/jpeg               "access plus 1 year"
+  ExpiresByType image/png                "access plus 1 year"
+  ExpiresByType image/webp               "access plus 1 year"
+  ExpiresByType image/avif               "access plus 1 year"
+  ExpiresByType image/svg+xml            "access plus 1 year"
+  ExpiresByType video/mp4                "access plus 1 year"
+  ExpiresByType font/woff2               "access plus 1 year"
+
+  # Hojas de estilo y scripts: un mes (llevan ?v=NN para forzar la actualización)
+  ExpiresByType text/css                 "access plus 1 month"
+  ExpiresByType application/javascript   "access plus 1 month"
+
+  # HTML: nunca en caché, para que los cambios se vean al momento
+  ExpiresByType text/html                "access plus 0 seconds"
+</IfModule>
+
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+
+  # ---------- Seguridad ----------
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+  # El panel nunca se guarda en caché ni se indexa
+  <FilesMatch "^admin\.html$">
+    Header set Cache-Control "no-store"
+    Header set X-Robots-Tag "noindex, nofollow"
+  </FilesMatch>
+</IfModule>
+
+# ---------- Sin listados de carpetas ----------
+Options -Indexes
+
+# ---------- Archivos que no deben servirse ----------
+# (incluye solicitudes.csv, la copia de seguridad de los formularios)
+<FilesMatch "\.(md|sql|pdf|json|csv|log)$">
+  Require all denied
+</FilesMatch>
+
+# El contenedor de Google Tag Manager sí debe poder descargarse si se usa
+<Files "gtm-contenedor-amabilis.json">
+  Require all granted
+</Files>
