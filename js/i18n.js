@@ -42,6 +42,7 @@
     "Inicio": "Home",
     "Propiedades": "Properties",
     "Nosotros": "About",
+    "Correo electrónico*": "Email address*",
     "Ya sea que quieras comprar, vender, rentar o invertir, un asesor te atenderá personalmente.": "Whether you want to buy, sell, rent or invest, an advisor will assist you personally.",
     "Escríbenos por WhatsApp": "Message us on WhatsApp",
     "Llamar ahora": "Call now",

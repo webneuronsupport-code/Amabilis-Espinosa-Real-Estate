@@ -431,6 +431,7 @@
             <input type="hidden" name="propiedad_id" value="${p.id}">
             <div class="field"><input id="pn" name="nombre" placeholder=" " required><label for="pn">Nombre</label></div>
             <div class="field"><input id="pt" name="telefono" type="tel" placeholder=" " required><label for="pt">Teléfono</label></div>
+            <div class="field"><input id="pe" name="email" type="email" placeholder=" " required autocomplete="email"><label for="pe">Correo electrónico*</label></div>
             <button class="btn btn--block" type="submit"><span class="btn__label"><span>Solicitar información</span><span>Solicitar información</span></span>${I.arrow}</button>
             <div class="form__ok">¡Gracias! Te contactaremos muy pronto.</div>
           </form>
