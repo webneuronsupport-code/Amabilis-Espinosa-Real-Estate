@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="js/i18n.js?v=132"></script>
+  <script src="js/i18n.js?v=134"></script>
   <title>Inmobiliaria en Metepec y Toluca | Casas y departamentos en venta y renta | Amábilis &amp; Espinosa</title>
   <meta name="description" content="Compra, vende o renta casas, departamentos y terrenos en Metepec, Toluca, Lerma y CDMX con asesoría personalizada. Más de 10 años de experiencia y +150 clientes satisfechos.">
   <link rel="canonical" href="https://www.amabilisespinosa.com/">
@@ -19,7 +19,7 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <!-- Google Tag Manager (ID en js/gtm.js) -->
-  <script src="js/gtm.js?v=132" data-page="home"></script>
+  <script src="js/gtm.js?v=134" data-page="home"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://images.unsplash.com">
@@ -28,13 +28,13 @@
     /* Crítico: la pantalla de carga debe cubrir desde el primer pintado,
        antes de que llegue la hoja de estilos. Evita ver el hero a medias. */
     .preloader { position: fixed; inset: 0; z-index: 1000; background: #0a1430; display: grid; place-items: center; }
-    .hero__media { background: #0a1430 center / cover no-repeat; }
+    .hero__media { background: #0a1430; }
     /* La barra avanza sola desde el primer fotograma, sin esperar a ningún script */
     @keyframes ae-carga { from { transform: scaleX(0); } to { transform: scaleX(.94); } }
     .preloader__bar i { animation: ae-carga 2.2s cubic-bezier(.22,.8,.26,1) forwards; }
   </style>
-  <link rel="stylesheet" href="css/styles.css?v=132">
-  <link rel="stylesheet" href="css/mobile.css?v=132">
+  <link rel="stylesheet" href="css/styles.css?v=134">
+  <link rel="stylesheet" href="css/mobile.css?v=134">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -87,7 +87,7 @@
     <!-- HERO -->
     <section class="hero">
       <div class="hero__media">
-        <video id="heroVideo" data-src="img/hero/hero-main.mp4" muted loop playsinline preload="none"></video>
+        <video id="heroVideo" data-escritorio="img/hero/hero-main.mp4" data-movil="img/hero/hero.mp4" muted loop playsinline preload="none"></video>
       </div>
       <script>
         /* Decide al instante si vale la pena bajar el video (16 MB) o basta el póster.
@@ -99,16 +99,21 @@
           var chico = window.matchMedia("(max-width: 800px)").matches;
           var sinMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-          if (ahorro || chico || sinMovimiento) {
+          // En el teléfono se usa el vídeo vertical de 2 MB; el horizontal pesa 16 MB
+          // y no alcanza a cargar con datos móviles.
+          var fuente = chico ? v.dataset.movil : v.dataset.escritorio;
+
+          if (ahorro || sinMovimiento || !fuente) {
             window.__heroListo = Promise.resolve("poster");
             return;                       // se queda el póster de fondo: nada que descargar
           }
+          if (chico) { v.classList.add("es-vertical"); }
           window.__heroListo = new Promise(function (listo) {
             var fin = function (motivo) { v.classList.add("is-ready"); listo(motivo); };
             v.addEventListener("canplay", function () { fin("video"); }, { once: true });
             v.addEventListener("error", function () { listo("poster"); }, { once: true });
             setTimeout(function () { listo("tiempo"); }, 6000);  // si tarda, no bloquea
-            v.src = v.dataset.src;
+            v.src = fuente;
             var r = v.play();
             if (r && r.catch) { r.catch(function () {}); }
           });
@@ -394,8 +399,8 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="js/data.js?v=132"></script>
-  <script src="js/supabase-config.js?v=132"></script>
-  <script src="js/store.js?v=132"></script>
+  <script src="js/data.js?v=134"></script>
+  <script src="js/supabase-config.js?v=134"></script>
+  <script src="js/store.js?v=134"></script>
 </body>
 </html>

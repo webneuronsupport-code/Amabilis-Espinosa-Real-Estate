@@ -224,12 +224,14 @@ em, .serif-i { font-family: var(--f-display); font-style: italic; color: var(--g
 .hero { position: relative; min-height: 100svh; color: var(--cream); display: flex; align-items: flex-end; overflow: hidden; background: var(--ink); }
 .hero__media {
   position: absolute; inset: 0;
-  /* El póster es el fondo: se ve de inmediato y es lo único que carga en móvil */
-  background: var(--ink) url("https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=70&w=1400") center / cover no-repeat;
+  /* Sin imagen de fondo: solo el azul de la marca hasta que entra el video */
+  background: var(--ink);
 }
 /* El video entra encima solo cuando puede reproducirse, nunca de golpe */
 .hero__media video { opacity: 0; transition: opacity .9s var(--ease); }
 .hero__media video.is-ready { opacity: 1; }
+/* En el teléfono se reproduce la versión vertical: encuadre centrado y sin ampliar */
+.hero__media video.es-vertical { transform: none; object-position: 50% 50%; }
 .hero__media img, .hero__media video { width: 100%; height: 100%; object-fit: cover; transform: scale(1.15); }
 .hero__media::after {
   content: ""; position: absolute; inset: 0;
