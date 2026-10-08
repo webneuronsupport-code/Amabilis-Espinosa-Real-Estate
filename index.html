@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="js/i18n.js?v=135"></script>
+  <script src="js/i18n.js?v=136"></script>
   <title>Inmobiliaria en Metepec y Toluca | Casas y departamentos en venta y renta | Amábilis &amp; Espinosa</title>
   <meta name="description" content="Compra, vende o renta casas, departamentos y terrenos en Metepec, Toluca, Lerma y CDMX con asesoría personalizada. Más de 10 años de experiencia y +150 clientes satisfechos.">
   <link rel="canonical" href="https://www.amabilisespinosa.com/">
@@ -19,7 +19,7 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <!-- Google Tag Manager (ID en js/gtm.js) -->
-  <script src="js/gtm.js?v=135" data-page="home"></script>
+  <script src="js/gtm.js?v=136" data-page="home"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://images.unsplash.com">
@@ -32,9 +32,24 @@
     /* La barra avanza sola desde el primer fotograma, sin esperar a ningún script */
     @keyframes ae-carga { from { transform: scaleX(0); } to { transform: scaleX(.94); } }
     .preloader__bar i { animation: ae-carga 2.2s cubic-bezier(.22,.8,.26,1) forwards; }
+
+    /* Nada del sitio puede verse antes de que termine la pantalla de carga:
+       ni un fotograma, aunque la hoja de estilos tarde o un script falle.
+       El respaldo de 6 s descubre el contenido si algo saliera mal. */
+    @keyframes ae-revelar { to { visibility: visible; } }
+    html.cargando body > *:not(.preloader) {
+      visibility: hidden;
+      animation: ae-revelar 0s linear 6s forwards;
+    }
   </style>
-  <link rel="stylesheet" href="css/styles.css?v=135">
-  <link rel="stylesheet" href="css/mobile.css?v=135">
+  <script>
+    /* Se marca por JavaScript a propósito: si el visitante lo tiene desactivado,
+       no se oculta nada y el sitio se ve de inmediato. */
+    document.documentElement.classList.add("cargando");
+    setTimeout(function () { document.documentElement.classList.remove("cargando"); }, 6000);
+  </script>
+  <link rel="stylesheet" href="css/styles.css?v=136">
+  <link rel="stylesheet" href="css/mobile.css?v=136">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -396,8 +411,8 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="js/data.js?v=135"></script>
-  <script src="js/supabase-config.js?v=135"></script>
-  <script src="js/store.js?v=135"></script>
+  <script src="js/data.js?v=136"></script>
+  <script src="js/supabase-config.js?v=136"></script>
+  <script src="js/store.js?v=136"></script>
 </body>
 </html>

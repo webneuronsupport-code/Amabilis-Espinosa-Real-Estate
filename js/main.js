@@ -1176,6 +1176,7 @@
       const t = Math.min(performance.now() / 2200, 1);
       const fin = { v: Math.max(window.__progreso || 0, (1 - Math.pow(1 - t, 3)) * 94) };
       if (barra) { barra.style.animation = "none"; barra.style.transform = `scaleX(${fin.v / 100})`; }
+      document.documentElement.classList.remove("cargando");
       gsap.timeline({ onComplete: () => { pre.remove(); document.body.classList.remove("is-locked"); } })
         .to(fin, {
           v: 100, duration: 0.45, ease: "power2.out",
@@ -1188,6 +1189,7 @@
         .to(pre, { clipPath: "inset(0 0 100% 0)", duration: 0.9, ease: "expo.inOut", onStart: intro }, "-=0.2");
     });
   } else {
+    document.documentElement.classList.remove("cargando");
     pre?.remove();
     intro();
   }
