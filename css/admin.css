@@ -197,3 +197,32 @@ code { background: rgba(10, 20, 48, .06); padding: 2px 6px; border-radius: 6px; 
 }
 
 .tarjeta__foto--vacia { display: grid; place-items: center; font-size: 12px; color: var(--tinta-50); }
+
+/* =========================================================
+   Táctiles: evitar el zoom automático de iOS
+   ---------------------------------------------------------
+   Safari amplía la página al enfocar un campo cuya letra mide
+   menos de 16px. Esa ampliación es la que provoca que la vista
+   se pueda desplazar a los lados y el contenido quede cortado.
+   ========================================================= */
+@media (pointer: coarse) {
+  .campo input,
+  .campo select,
+  .campo textarea,
+  .filtros input[type="search"],
+  .foto__alt,
+  .acceso input {
+    font-size: 16px;
+  }
+  .foto__alt { padding: 9px 10px; }
+}
+
+/* Textos largos (correo de la sesión, nombres de propiedad) que no deben empujar */
+.barra__marca small,
+.tarjeta__titulo,
+.tarjeta__meta,
+#resumen { overflow-wrap: anywhere; }
+
+/* Nada puede ser más ancho que la pantalla */
+.contenido, .bloque, .tarjeta, .formulario, .galeria { max-width: 100%; }
+img, video, iframe { max-width: 100%; }
