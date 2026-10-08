@@ -12,11 +12,13 @@ const SITE = {
   email: "contacto@amabilisespinosa.com",
   address: "Metepec, Estado de México",
   hours: "Lun – Sáb · 9:00 a 19:00",
-  instagram: "https://www.instagram.com/",
-  facebook: "https://www.facebook.com/",
-  tiktok: "https://www.tiktok.com/",
+  instagram: "https://www.instagram.com/amabilisespinosaoficial?utm_source=qr&stkn=MWFva2Fja2F4YTgzaA==",
+  facebook: "https://www.facebook.com/share/1DdjydeiPY/",
+  tiktok: "https://tiktok.com/@amabilisespinosaoficial",
   youtube: "https://www.youtube.com/",
-  x: "https://x.com/",
+  x: "https://x.com/Homefindermx",
+  threads: "https://www.threads.net/@amabilisespinosaoficial",
+  telegram: "https://t.me/amabilisespinosaoficial",
 };
 
 const U = (id, w = 1600) =>

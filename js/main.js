@@ -61,7 +61,9 @@
     fb: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 8h3V4h-3a4 4 0 0 0-4 4v2H8v4h2v8h4v-8h3l1-4h-4V8Z"/></svg>',
     tt: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 3a4.5 4.5 0 0 0 4.5 4.5v3.3a7.7 7.7 0 0 1-4.5-1.4v6.3A6.3 6.3 0 1 1 10.2 9.4v3.4a3 3 0 1 0 2.9 3V3h3.4Z"/></svg>',
     yt: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8ZM10 15V9l5.2 3L10 15Z"/></svg>',
-    x: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 3h3.1l-6.8 7.8L21.8 21h-6.2l-4.9-6.4L5.1 21H2l7.3-8.3L2.4 3h6.4l4.4 5.8L17.5 3Zm-1.1 16.1h1.7L7.7 4.8H5.9l10.5 14.3Z"/></svg>',
+    telegram: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.19-.08-.05-.19-.02-.27 0-.11.02-1.9 1.2-5.36 3.53-.5.35-.95.52-1.36.51-.45-.01-1.32-.26-1.96-.46-.79-.26-1.42-.39-1.36-.83.03-.22.35-.45.96-.69 3.75-1.64 6.25-2.71 7.5-3.23 3.56-1.48 4.31-1.74 4.79-1.75.11 0 .34.02.49.14.12.1.16.23.17.34z"/></svg>',
+      threads: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 11.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/><path fill-rule="evenodd" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 1.5c-4.69 0-8.5 3.81-8.5 8.5s3.81 8.5 8.5 8.5 8.5-3.81 8.5-8.5-3.81-8.5-8.5-8.5zm3.62 10.42a4.48 4.48 0 0 1-3.62 1.58c-2.48 0-4.5-2.02-4.5-4.5s2.02-4.5 4.5-4.5a4.48 4.48 0 0 1 4.18 2.87.75.75 0 0 0 1.4-.53 5.98 5.98 0 0 0-5.58-3.84c-3.31 0-6 2.69-6 6s2.69 6 6 6a5.98 5.98 0 0 0 4.82-2.42.75.75 0 1 0-1.2-1.16z" clip-rule="evenodd"/></svg>',
+      x: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 3h3.1l-6.8 7.8L21.8 21h-6.2l-4.9-6.4L5.1 21H2l7.3-8.3L2.4 3h6.4l4.4 5.8L17.5 3Zm-1.1 16.1h1.7L7.7 4.8H5.9l10.5 14.3Z"/></svg>',
   };
   window.ICONS = I;
 
@@ -98,15 +100,19 @@
   /* ---------- Layout compartido ---------- */
 
   // Redes sociales del negocio (un solo lugar para los tres bloques)
-  const redes = (donde = "header") => [
-    ["WhatsApp", "whatsapp", waLink(), I.wa],
-    ["Facebook", "facebook", SITE.facebook, I.fb],
-    ["Instagram", "instagram", SITE.instagram, I.ig],
-    ["YouTube", "youtube", SITE.youtube, I.yt],
-    ["TikTok", "tiktok", SITE.tiktok, I.tt],
-    ["X", "x", SITE.x, I.x],
-  ].filter(([, , url]) => url).map(([nombre, red, url, icono]) =>
-    `<a href="${url}" target="_blank" rel="noopener" aria-label="${nombre}" data-red="${red}" data-loc="${donde}">${icono}</a>`).join("");
+  const redes = (donde = "header") => {
+    const list = [
+      ["WhatsApp", "whatsapp", "https://wa.me/message/KRFMQF62FODSJ1", I.wa],
+      ["Facebook", "facebook", SITE.facebook, I.fb],
+      ["Instagram", "instagram", SITE.instagram, I.ig],
+      ["TikTok", "tiktok", SITE.tiktok, I.tt],
+      ["X (Twitter)", "x", SITE.x, I.x],
+      ["Threads", "threads", SITE.threads, I.threads],
+      ["Telegram", "telegram", SITE.telegram, I.telegram],
+    ];
+    return list.filter(item => item[2]).map(([nombre, red, url, icono]) => 
+      '<a href="' + url + '" target="_blank" rel="noopener" aria-label="' + nombre + '" data-red="' + red + '" data-loc="' + donde + '">' + icono + '</a>').join("");
+  };
 
   const NAV = [
     ["Inicio", "index.html", "home"],
