@@ -230,8 +230,6 @@ em, .serif-i { font-family: var(--f-display); font-style: italic; color: var(--g
 /* El video entra encima solo cuando puede reproducirse, nunca de golpe */
 .hero__media video { opacity: 0; transition: opacity .9s var(--ease); }
 .hero__media video.is-ready { opacity: 1; }
-/* En el teléfono se reproduce la versión vertical: encuadre centrado y sin ampliar */
-.hero__media video.es-vertical { transform: none; object-position: 50% 50%; }
 .hero__media img, .hero__media video { width: 100%; height: 100%; object-fit: cover; transform: scale(1.15); }
 .hero__media::after {
   content: ""; position: absolute; inset: 0;
