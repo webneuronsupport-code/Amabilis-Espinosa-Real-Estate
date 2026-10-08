@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="js/i18n.js?v=129"></script>
+  <script src="js/i18n.js?v=132"></script>
   <title>Inmobiliaria en Metepec y Toluca | Casas y departamentos en venta y renta | Amábilis &amp; Espinosa</title>
   <meta name="description" content="Compra, vende o renta casas, departamentos y terrenos en Metepec, Toluca, Lerma y CDMX con asesoría personalizada. Más de 10 años de experiencia y +150 clientes satisfechos.">
   <link rel="canonical" href="https://www.amabilisespinosa.com/">
@@ -19,7 +19,7 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <!-- Google Tag Manager (ID en js/gtm.js) -->
-  <script src="js/gtm.js?v=129" data-page="home"></script>
+  <script src="js/gtm.js?v=132" data-page="home"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://images.unsplash.com">
@@ -29,9 +29,12 @@
        antes de que llegue la hoja de estilos. Evita ver el hero a medias. */
     .preloader { position: fixed; inset: 0; z-index: 1000; background: #0a1430; display: grid; place-items: center; }
     .hero__media { background: #0a1430 center / cover no-repeat; }
+    /* La barra avanza sola desde el primer fotograma, sin esperar a ningún script */
+    @keyframes ae-carga { from { transform: scaleX(0); } to { transform: scaleX(.94); } }
+    .preloader__bar i { animation: ae-carga 2.2s cubic-bezier(.22,.8,.26,1) forwards; }
   </style>
-  <link rel="stylesheet" href="css/styles.css?v=129">
-  <link rel="stylesheet" href="css/mobile.css?v=129">
+  <link rel="stylesheet" href="css/styles.css?v=132">
+  <link rel="stylesheet" href="css/mobile.css?v=132">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -60,6 +63,25 @@
       <div class="preloader__count">0%</div>
     </div>
   </div>
+  <script>
+    /* La barra avanza desde el primer fotograma, sin esperar a GSAP ni a los datos.
+       Antes quedaba inmóvil en 0% más de un segundo. */
+    (function () {
+      var cuenta = document.querySelector(".preloader__count");
+      if (!cuenta) return;
+      var inicio = performance.now();
+      var tope = 94;                       // el tramo final se reserva para el cierre real
+      window.__progreso = 0;
+      // El número acompaña a la barra; si el navegador pausa los fotogramas
+      // (pestaña en segundo plano) la barra sigue avanzando por CSS igualmente.
+      (function paso() {
+        var t = Math.min((performance.now() - inicio) / 2200, 1);
+        window.__progreso = (1 - Math.pow(1 - t, 3)) * tope;
+        cuenta.textContent = Math.round(window.__progreso) + "%";
+        if (t < 1 && !window.__cargaCerrada) requestAnimationFrame(paso);
+      })();
+    })();
+  </script>
 
   <main>
     <!-- HERO -->
@@ -372,8 +394,8 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="js/data.js?v=129"></script>
-  <script src="js/supabase-config.js?v=129"></script>
-  <script src="js/store.js?v=129"></script>
+  <script src="js/data.js?v=132"></script>
+  <script src="js/supabase-config.js?v=132"></script>
+  <script src="js/store.js?v=132"></script>
 </body>
 </html>

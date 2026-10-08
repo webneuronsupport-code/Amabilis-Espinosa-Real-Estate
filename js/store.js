@@ -13,7 +13,7 @@
   const CFG = window.SUPABASE_CONFIG || {};
   const CACHE = "ae-propiedades";
   const VIGENCIA = 10 * 60 * 1000; // 10 minutos
-  const ESPERA = 3500; // ms antes de rendirse y usar el catálogo local
+  const ESPERA = 2200; // ms antes de rendirse y usar el catálogo local
 
   const versionJS = (document.currentScript?.src.match(/\?v=\d+/) || [""])[0];
 

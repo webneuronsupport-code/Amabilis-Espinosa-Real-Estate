@@ -1152,22 +1152,41 @@
   const internal = document.referrer.startsWith(location.origin) && navType !== "reload";
   if (pre && hasGSAP && !reduced && !internal) {
     document.body.classList.add("is-locked");
-    const count = $(".preloader__count"), obj = { v: 0 };
-    const tlCarga = gsap.timeline({ onComplete: () => { pre.remove(); document.body.classList.remove("is-locked"); } });
-    tlCarga
-      .from(".preloader__crest", { opacity: 0, scale: 0.8, y: 24, duration: 1.2, ease: "expo.out" })
-      .fromTo(".preloader__word", { clipPath: "inset(0 50% 0 50%)", opacity: 0 }, { clipPath: "inset(0 0% 0 0%)", opacity: 1, duration: 1.1, ease: "expo.inOut" }, 0.35)
-      .from(".preloader__tag", { opacity: 0, y: 12, duration: 0.9, ease: "expo.out" }, 0.9)
-      .to(".preloader__bar i", { scaleX: 1, duration: 1.4, ease: "power2.inOut" }, 0.2)
-      .to(obj, { v: 100, duration: 1.4, ease: "power2.inOut", onUpdate: () => (count.textContent = Math.round(obj.v) + "%") }, 0.2)
-      .to(".preloader__inner", { yPercent: -40, opacity: 0, duration: 0.8, ease: "expo.in" })
-      .addPause(">", () => {
-        // El hero no se descubre hasta que el video pueda reproducirse; si la red
-        // va lenta se continúa a los 1.2 s y se queda el póster de fondo.
-        const listo = window.__heroListo || Promise.resolve("poster");
-        Promise.race([listo, new Promise((r) => setTimeout(r, 1200))]).then(() => tlCarga.resume());
-      })
-      .to(pre, { clipPath: "inset(0 0 100% 0)", duration: 1.1, ease: "expo.inOut", onStart: intro }, "+=0");
+    const count = $(".preloader__count"), barra = $(".preloader__bar i");
+
+    // La entrada del logo arranca en cuanto este script existe; la barra ya venía
+    // corriendo desde el primer fotograma (script en línea de index.html).
+    gsap.timeline()
+      .from(".preloader__crest", { opacity: 0, scale: 0.8, y: 24, duration: 1, ease: "expo.out" })
+      .fromTo(".preloader__word", { clipPath: "inset(0 50% 0 50%)", opacity: 0 }, { clipPath: "inset(0 0% 0 0%)", opacity: 1, duration: 0.9, ease: "expo.inOut" }, 0.25)
+      .from(".preloader__tag", { opacity: 0, y: 12, duration: 0.8, ease: "expo.out" }, 0.6);
+
+    // El cierre ocurre cuando el hero puede verse bien, no por reloj.
+    const desdeElInicio = (ms) => Math.max(0, ms - performance.now());
+    const esperar = Promise.all([
+      window.__heroListo || Promise.resolve("poster"),
+      new Promise((r) => setTimeout(r, desdeElInicio(1800))),   // mínimo visible, para que no parpadee
+    ]);
+    const tope = new Promise((r) => setTimeout(r, desdeElInicio(4500))); // nunca más de 4.5 s
+
+    Promise.race([esperar, tope]).then(() => {
+      window.__cargaCerrada = true;
+      // El avance se deduce del tiempo transcurrido: si el navegador pausó los
+      // fotogramas (pestaña en segundo plano) el contador podría ir atrasado.
+      const t = Math.min(performance.now() / 2200, 1);
+      const fin = { v: Math.max(window.__progreso || 0, (1 - Math.pow(1 - t, 3)) * 94) };
+      if (barra) { barra.style.animation = "none"; barra.style.transform = `scaleX(${fin.v / 100})`; }
+      gsap.timeline({ onComplete: () => { pre.remove(); document.body.classList.remove("is-locked"); } })
+        .to(fin, {
+          v: 100, duration: 0.45, ease: "power2.out",
+          onUpdate: () => {
+            if (barra) barra.style.transform = `scaleX(${fin.v / 100})`;
+            if (count) count.textContent = Math.round(fin.v) + "%";
+          },
+        })
+        .to(".preloader__inner", { yPercent: -30, opacity: 0, duration: 0.5, ease: "expo.in" })
+        .to(pre, { clipPath: "inset(0 0 100% 0)", duration: 0.9, ease: "expo.inOut", onStart: intro }, "-=0.2");
+    });
   } else {
     pre?.remove();
     intro();
