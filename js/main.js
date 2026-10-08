@@ -1153,14 +1153,21 @@
   if (pre && hasGSAP && !reduced && !internal) {
     document.body.classList.add("is-locked");
     const count = $(".preloader__count"), obj = { v: 0 };
-    gsap.timeline({ onComplete: () => { pre.remove(); document.body.classList.remove("is-locked"); } })
+    const tlCarga = gsap.timeline({ onComplete: () => { pre.remove(); document.body.classList.remove("is-locked"); } });
+    tlCarga
       .from(".preloader__crest", { opacity: 0, scale: 0.8, y: 24, duration: 1.2, ease: "expo.out" })
       .fromTo(".preloader__word", { clipPath: "inset(0 50% 0 50%)", opacity: 0 }, { clipPath: "inset(0 0% 0 0%)", opacity: 1, duration: 1.1, ease: "expo.inOut" }, 0.35)
       .from(".preloader__tag", { opacity: 0, y: 12, duration: 0.9, ease: "expo.out" }, 0.9)
       .to(".preloader__bar i", { scaleX: 1, duration: 1.4, ease: "power2.inOut" }, 0.2)
       .to(obj, { v: 100, duration: 1.4, ease: "power2.inOut", onUpdate: () => (count.textContent = Math.round(obj.v) + "%") }, 0.2)
       .to(".preloader__inner", { yPercent: -40, opacity: 0, duration: 0.8, ease: "expo.in" })
-      .to(pre, { clipPath: "inset(0 0 100% 0)", duration: 1.1, ease: "expo.inOut", onStart: intro }, "-=0.3");
+      .addPause(">", () => {
+        // El hero no se descubre hasta que el video pueda reproducirse; si la red
+        // va lenta se continúa a los 1.2 s y se queda el póster de fondo.
+        const listo = window.__heroListo || Promise.resolve("poster");
+        Promise.race([listo, new Promise((r) => setTimeout(r, 1200))]).then(() => tlCarga.resume());
+      })
+      .to(pre, { clipPath: "inset(0 0 100% 0)", duration: 1.1, ease: "expo.inOut", onStart: intro }, "+=0");
   } else {
     pre?.remove();
     intro();

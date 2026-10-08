@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="js/i18n.js?v=80"></script>
+  <script src="js/i18n.js?v=129"></script>
   <title>Inmobiliaria en Metepec y Toluca | Casas y departamentos en venta y renta | Amábilis &amp; Espinosa</title>
   <meta name="description" content="Compra, vende o renta casas, departamentos y terrenos en Metepec, Toluca, Lerma y CDMX con asesoría personalizada. Más de 10 años de experiencia y +150 clientes satisfechos.">
   <link rel="canonical" href="https://www.amabilisespinosa.com/">
@@ -19,13 +19,19 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <!-- Google Tag Manager (ID en js/gtm.js) -->
-  <script src="js/gtm.js?v=80" data-page="home"></script>
+  <script src="js/gtm.js?v=129" data-page="home"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://images.unsplash.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=81">
-  <link rel="stylesheet" href="css/mobile.css?v=80">
+  <style>
+    /* Crítico: la pantalla de carga debe cubrir desde el primer pintado,
+       antes de que llegue la hoja de estilos. Evita ver el hero a medias. */
+    .preloader { position: fixed; inset: 0; z-index: 1000; background: #0a1430; display: grid; place-items: center; }
+    .hero__media { background: #0a1430 center / cover no-repeat; }
+  </style>
+  <link rel="stylesheet" href="css/styles.css?v=129">
+  <link rel="stylesheet" href="css/mobile.css?v=129">
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -59,8 +65,33 @@
     <!-- HERO -->
     <section class="hero">
       <div class="hero__media">
-        <video src="img/hero/hero-main.mp4" autoplay muted loop playsinline poster="https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80&w=2200"></video>
+        <video id="heroVideo" data-src="img/hero/hero-main.mp4" muted loop playsinline preload="none"></video>
       </div>
+      <script>
+        /* Decide al instante si vale la pena bajar el video (16 MB) o basta el póster.
+           Va aquí, en línea, para no esperar a que cargue el resto de los scripts. */
+        (function () {
+          var v = document.getElementById("heroVideo");
+          var red = navigator.connection || {};
+          var ahorro = red.saveData === true || /(^|-)(2g|slow-2g)$/.test(red.effectiveType || "");
+          var chico = window.matchMedia("(max-width: 800px)").matches;
+          var sinMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+          if (ahorro || chico || sinMovimiento) {
+            window.__heroListo = Promise.resolve("poster");
+            return;                       // se queda el póster de fondo: nada que descargar
+          }
+          window.__heroListo = new Promise(function (listo) {
+            var fin = function (motivo) { v.classList.add("is-ready"); listo(motivo); };
+            v.addEventListener("canplay", function () { fin("video"); }, { once: true });
+            v.addEventListener("error", function () { listo("poster"); }, { once: true });
+            setTimeout(function () { listo("tiempo"); }, 6000);  // si tarda, no bloquea
+            v.src = v.dataset.src;
+            var r = v.play();
+            if (r && r.catch) { r.catch(function () {}); }
+          });
+        })();
+      </script>
       <div class="container hero__content">
         <div class="hero__badge" data-hero>
           <span class="stars" role="img" aria-label="5 estrellas"><svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.9l2.9 6.5 7.1.7-5.3 4.7 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9.1l7.1-.7z"/></svg><svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.9l2.9 6.5 7.1.7-5.3 4.7 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9.1l7.1-.7z"/></svg><svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.9l2.9 6.5 7.1.7-5.3 4.7 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9.1l7.1-.7z"/></svg><svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.9l2.9 6.5 7.1.7-5.3 4.7 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9.1l7.1-.7z"/></svg><svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.9l2.9 6.5 7.1.7-5.3 4.7 1.5 7-6.2-3.6-6.2 3.6 1.5-7L2 9.1l7.1-.7z"/></svg></span>
@@ -341,8 +372,8 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-  <script src="js/data.js?v=81"></script>
-  <script src="js/supabase-config.js?v=80"></script>
-  <script src="js/store.js?v=80"></script>
+  <script src="js/data.js?v=129"></script>
+  <script src="js/supabase-config.js?v=129"></script>
+  <script src="js/store.js?v=129"></script>
 </body>
 </html>
