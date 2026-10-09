@@ -144,6 +144,8 @@
             <span class="insignia ${p.published ? "insignia--publicada" : "insignia--borrador"}">
               ${p.published ? "Publicada" : "Borrador"}</span>
             ${p.featured ? '<span class="insignia insignia--destacada">Destacada</span>' : ""}
+            ${p.published && !(p.en && (p.en.summary || p.en.description))
+              ? '<span class="insignia insignia--sin-ingles" title="En el sitio en inglés se mostrará el texto en español">Sin inglés</span>' : ""}
             <span style="margin-left:6px">${(p.images || []).length} foto${(p.images || []).length === 1 ? "" : "s"}</span>
           </div>
         </div>
@@ -201,7 +203,8 @@
     $("#f-published").checked = actual.published !== false;
     $("#f-featured").checked = !!actual.featured;
     const en = actual.en || {};
-    valor("#f-en-title", en.title); valor("#f-en-summary", en.summary); valor("#f-en-description", en.description);
+    valor("#f-en-title", en.title); valor("#f-en-tag", en.tag);
+    valor("#f-en-summary", en.summary); valor("#f-en-description", en.description);
 
     amenidades = [...(actual.amenities || [])];
     fotos = (actual.images || []).map((src, i) => ({ src, alt: (actual.alts || [])[i] || "" }));
@@ -396,6 +399,7 @@
 
     const en = {
       title: $("#f-en-title").value.trim(),
+      tag: $("#f-en-tag").value.trim(),
       summary: $("#f-en-summary").value.trim(),
       description: $("#f-en-description").value.trim(),
     };

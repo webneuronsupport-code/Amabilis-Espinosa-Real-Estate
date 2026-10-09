@@ -226,3 +226,6 @@ code { background: rgba(10, 20, 48, .06); padding: 2px 6px; border-radius: 6px; 
 /* Nada puede ser más ancho que la pantalla */
 .contenido, .bloque, .tarjeta, .formulario, .galeria { max-width: 100%; }
 img, video, iframe { max-width: 100%; }
+
+/* Aviso de propiedad sin traducción: en inglés se verá el texto en español */
+.insignia--sin-ingles { background: rgba(197, 163, 94, .22); color: #7d6020; }
