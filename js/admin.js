@@ -392,6 +392,7 @@
     const titulo = $("#f-title").value.trim();
     if (!titulo) { avisar("#avisoForm", "Ponle un nombre a la propiedad."); $("#f-title").focus(); return; }
     if ($("#f-price").value.trim() === "") { avisar("#avisoForm", "Falta el precio."); $("#f-price").focus(); return; }
+    if (!$("#f-zone").value.trim()) { avisar("#avisoForm", "Indica la zona: se muestra en las tarjetas y en los filtros."); $("#f-zone").focus(); return; }
 
     const en = {
       title: $("#f-en-title").value.trim(),
@@ -403,7 +404,7 @@
     const fila = {
       id: actual.id || idLibre(aSlug(titulo) || `propiedad-${Date.now().toString(36)}`),
       title: titulo,
-      zone: $("#f-zone").value.trim() || null,
+      zone: $("#f-zone").value.trim(),
       location: $("#f-location").value.trim() || null,
       type: $("#f-type").value,
       operation: $("#f-operation").value,

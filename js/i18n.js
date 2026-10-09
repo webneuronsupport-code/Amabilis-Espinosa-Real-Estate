@@ -358,7 +358,9 @@
   var ATTRS = ["alt", "aria-label", "title", "data-cursor"];
 
   function norm(s) {
-    return s.replace(/ data-cursor-bound="1"/g, "").replace(/\s+/g, " ").trim();
+    // Un campo vacío en la base (zona o tipo sin llenar) no debe romper la página
+    if (s == null) return "";
+    return String(s).replace(/ data-cursor-bound="1"/g, "").replace(/\s+/g, " ").trim();
   }
   function lookup(s) {
     var k = norm(s);
@@ -456,7 +458,7 @@
   window.I18N = {
     lang: lang,
     t: function (es, en) { return lang === "en" ? en : es; },
-    tr: function (s) { return lang === "en" ? (lookup(s) || s) : s; },
+    tr: function (s) { if (s == null) return ""; return lang === "en" ? (lookup(s) || s) : s; },
     apply: apply,
     setLang: setLang,
     urlFor: urlFor,

@@ -27,17 +27,18 @@
   const normalizar = (filas) => {
     const en = (window.I18N || {}).lang === "en";
     return filas.map((f) => {
+      const texto = (v) => (v == null ? "" : String(v));
       const p = {
-        id: f.id, title: f.title, zone: f.zone, location: f.location,
-        type: f.type, operation: f.operation,
+        id: f.id, title: texto(f.title), zone: texto(f.zone), location: texto(f.location),
+        type: texto(f.type), operation: texto(f.operation),
         price: f.price == null ? null : Number(f.price),
         beds: f.beds == null ? null : Number(f.beds),
         baths: f.baths == null ? null : Number(f.baths),
         parking: f.parking == null ? null : Number(f.parking),
         built: f.built == null ? null : Number(f.built),
         land: f.land == null ? null : Number(f.land),
-        featured: !!f.featured, tag: f.tag || "",
-        summary: f.summary || "", description: f.description || "",
+        featured: !!f.featured, tag: texto(f.tag),
+        summary: texto(f.summary), description: texto(f.description),
         amenities: f.amenities || [], images: f.images || [], alts: f.alts || [],
       };
       if (en && f.en) Object.assign(p, f.en); // traducciones cargadas desde el panel

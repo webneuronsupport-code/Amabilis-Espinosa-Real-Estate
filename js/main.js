@@ -224,7 +224,7 @@
         <div class="prop-card__price">${fmtPrice(p)}</div>
       </div>
       <div class="prop-card__body">
-        <div class="prop-card__loc">${T.tr(p.type)} · ${T.tr(p.zone)}</div>
+        <div class="prop-card__loc">${[T.tr(p.type), T.tr(p.zone)].filter(Boolean).join(" · ")}</div>
         <div class="prop-card__title">${p.title}</div>
         <div class="prop-card__specs">${specsHTML(p)}</div>
         ${p.summary ? `<p class="prop-card__sum">${p.summary}</p>` : ""}
@@ -772,7 +772,13 @@
   });
   ["scroll", "resize"].forEach((ev) => window.addEventListener(ev, () => openDD?.place(), { passive: true }));
 
-  renderers[page]?.();
+  // Si una propiedad trae un dato inesperado, se registra y el sitio sigue:
+  // nunca debe quedarse la pantalla de carga colgada ni el contenido oculto.
+  try {
+    renderers[page]?.();
+  } catch (e) {
+    console.error("[render]", e);
+  }
   if (en) $$('a[data-loc="cta"][href*="wa.me"]').forEach((a) => (a.href = waLink("Hi, I'm looking for a property with these features:")));
   $$("select").forEach(enhanceSelect);
   bindForms();

@@ -7,7 +7,7 @@
   <title>Panel de propiedades | Amábilis &amp; Espinosa</title>
   <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/admin.css?v=136">
+  <link rel="stylesheet" href="css/admin.css?v=138">
 </head>
 <body>
   <!-- ======================= ACCESO ======================= -->
@@ -89,7 +89,7 @@
             <label class="campo campo--ancho"><span>Nombre de la propiedad *</span><input id="f-title" required></label>
             <label class="campo"><span>Operación</span><select id="f-operation"><option>Venta</option><option>Renta</option></select></label>
             <label class="campo"><span>Tipo</span><select id="f-type"><option>Casa</option><option>Departamento</option><option>Terreno</option><option>Comercial</option></select></label>
-            <label class="campo"><span>Zona</span><input id="f-zone" list="zonas" placeholder="Metepec"><datalist id="zonas"></datalist></label>
+            <label class="campo"><span>Zona *</span><input id="f-zone" list="zonas" placeholder="Metepec" required><datalist id="zonas"></datalist></label>
             <label class="campo"><span>Ubicación (como se muestra)</span><input id="f-location" placeholder="Metepec, Estado de México"></label>
             <label class="campo"><span>Precio en pesos *</span><input id="f-price" type="number" min="0" step="1000" required></label>
             <label class="campo"><span>Etiqueta</span><input id="f-tag" placeholder="Nuevo, Exclusiva, Preventa…"></label>
@@ -163,8 +163,8 @@
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="js/supabase-config.js?v=136"></script>
-  <script src="js/admin-demo.js?v=136"></script>
-  <script src="js/admin.js?v=136"></script>
+  <script src="js/supabase-config.js?v=138"></script>
+  <script src="js/admin-demo.js?v=138"></script>
+  <script src="js/admin.js?v=138"></script>
 </body>
 </html>
