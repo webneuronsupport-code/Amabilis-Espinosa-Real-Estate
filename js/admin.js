@@ -51,10 +51,11 @@
     el.classList.toggle("aviso--ok", ok);
   };
 
-  const confirmar = (titulo, texto) => new Promise((resolve) => {
+  const confirmar = (titulo, texto, etiqueta = "Sí, continuar") => new Promise((resolve) => {
     const m = $("#modal");
     $("#modalTitulo").textContent = titulo;
     $("#modalTexto").textContent = texto;
+    $("#modalAceptar").textContent = etiqueta;
     m.hidden = false;
     const cerrar = (valor) => {
       m.hidden = true;
@@ -99,7 +100,7 @@
   });
 
   $("#btnSalir").addEventListener("click", async () => {
-    if (sucio && !(await confirmar("¿Salir sin guardar?", "Hay cambios que todavía no se han guardado."))) return;
+    if (sucio && !(await confirmar("¿Salir sin guardar?", "Hay cambios que todavía no se han guardado.", "Salir sin guardar"))) return;
     await sb.auth.signOut();
     location.reload();
   });
@@ -198,6 +199,8 @@
     valor("#f-beds", actual.beds); valor("#f-baths", actual.baths); valor("#f-parking", actual.parking);
     valor("#f-built", actual.built); valor("#f-land", actual.land);
     valor("#f-summary", actual.summary); valor("#f-description", actual.description);
+    valor("#f-tour360", actual.tour360); valor("#f-video", actual.video);
+    ["#avisoVideo", "#avisoTour", "#avisoVideoEnlace"].forEach((a) => { if ($(a)) $(a).textContent = ""; });
     valor("#f-position", actual.position);
     $("#f-type").value = actual.type || "Casa";
     $("#f-operation").value = actual.operation || "Venta";
@@ -221,7 +224,7 @@
   }
 
   const volver = async () => {
-    if (sucio && !(await confirmar("¿Descartar los cambios?", "Lo que escribiste no se guardará."))) return;
+    if (sucio && !(await confirmar("¿Descartar los cambios?", "Lo que escribiste no se guardará.", "Sí, descartarlos"))) return;
     vistaEditor.hidden = true; vistaLista.hidden = false;
     window.scrollTo(0, 0);
   };
@@ -317,7 +320,7 @@
 
     if (quitar) {
       const k = +quitar.dataset.quitarModelo;
-      if (!(await confirmar("¿Quitar el modelo?", `Se eliminará «${modelos[k].name || "Tipo " + letra(k)}» con sus fotos al guardar.`))) return;
+      if (!(await confirmar("¿Quitar el modelo?", `Se eliminará «${modelos[k].name || "Tipo " + letra(k)}» con sus fotos al guardar.`, "Sí, quitarlo"))) return;
       const propias = (modelos[k].images || []).filter((u) => String(u).includes(`/${BUCKET}/`));
       modelos.splice(k, 1);
       pintarModelos(); sucio = true;
@@ -498,7 +501,7 @@
     if (!b) return;
     const i = +b.dataset.quitarFoto;
     const f = fotos[i];
-    if (!(await confirmar("¿Quitar la fotografía?", "Se eliminará de esta propiedad al guardar."))) return;
+    if (!(await confirmar("¿Quitar la fotografía?", "Se eliminará de esta propiedad al guardar.", "Sí, quitarla"))) return;
     fotos.splice(i, 1);
     pintarGaleria();
     sucio = true;
@@ -540,6 +543,61 @@
     if (rutas.length) await sb.storage.from(BUCKET).remove(rutas);
   };
 
+  /* ---------- Enlaces de recorrido y video ---------- */
+  // Si el enlace va sin "https://" el sitio no sabe a dónde apunta y termina
+  // mostrando la propia página dentro del recuadro. Se corrige aquí mismo.
+  const normalizarEnlace = (campo, aviso) => {
+    const el = $(campo);
+    el.addEventListener("blur", () => {
+      const txt = el.value.trim();
+      $(aviso).textContent = "";
+      if (!txt) { el.value = ""; return; }
+      const completo = /^https?:\/\//i.test(txt) ? txt : `https://${txt.replace(/^\/+/, "")}`;
+      try {
+        const u = new URL(completo);
+        if (!u.hostname.includes(".")) throw new Error("sin dominio");
+        if (u.origin === location.origin) throw new Error("es el propio sitio");
+        if (el.value !== u.href) { el.value = u.href; sucio = true; }
+      } catch (err) {
+        $(aviso).textContent = "Eso no parece una dirección de internet. Copia el enlace completo, empezando por https://";
+      }
+    });
+  };
+  normalizarEnlace("#f-tour360", "#avisoTour");
+  normalizarEnlace("#f-video", "#avisoVideoEnlace");
+
+  /* ---------- Video subido al almacén ---------- */
+  const entradaVideo = document.createElement("input");
+  entradaVideo.type = "file"; entradaVideo.accept = "video/mp4,video/webm,video/quicktime"; entradaVideo.hidden = true;
+  document.body.appendChild(entradaVideo);
+
+  $("#btnVideo")?.addEventListener("click", () => entradaVideo.click());
+
+  entradaVideo.addEventListener("change", async (e) => {
+    const archivo = e.target.files[0];
+    e.target.value = "";
+    if (!archivo) return;
+    const aviso = $("#avisoVideo");
+    const MB = archivo.size / 1048576;
+
+    if (MB > 45) {
+      aviso.textContent = `Ese video pesa ${MB.toFixed(0)} MB y el límite por archivo es 45 MB. Súbelo a YouTube y pega el enlace: así no hay límite de peso.`;
+      return;
+    }
+    if (MB > 20 && !(await confirmar("¿Subir un video de " + MB.toFixed(0) + " MB?",
+        "Los videos pesados consumen rápido el plan gratuito de Supabase. Subirlo a YouTube y pegar el enlace es gratis y carga más rápido en celulares."))) return;
+
+    aviso.textContent = "Subiendo video…";
+    const ext = (archivo.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const ruta = `${idParaFotos()}/video-${Date.now().toString(36)}.${ext}`;
+    const { error } = await sb.storage.from(BUCKET).upload(ruta, archivo, { cacheControl: "31536000", upsert: false });
+    if (error) { aviso.textContent = "No se pudo subir: " + error.message; return; }
+
+    $("#f-video").value = sb.storage.from(BUCKET).getPublicUrl(ruta).data.publicUrl;
+    aviso.textContent = `Video subido (${MB.toFixed(1)} MB). Recuerda guardar.`;
+    sucio = true;
+  });
+
   /* ---------- Guardar ---------- */
   const numero = (id) => { const v = $(id).value.trim(); return v === "" ? null : Number(v); };
 
@@ -570,6 +628,8 @@
       featured: $("#f-featured").checked,
       published: $("#f-published").checked,
       tag: $("#f-tag").value.trim() || null,
+      tour360: $("#f-tour360").value.trim() || null,
+      video: $("#f-video").value.trim() || null,
       summary: $("#f-summary").value.trim(),
       description: $("#f-description").value.trim(),
       amenities: amenidades,
@@ -610,10 +670,13 @@
   $("#btnEliminar").addEventListener("click", async () => {
     if (!actual?.id) return;
     const ok = await confirmar("¿Eliminar la propiedad?",
-      `Se quitará «${actual.title}» del sitio junto con sus fotografías. Esta acción no se puede deshacer.`);
+      `Se quitará «${actual.title}» del sitio junto con sus fotografías. Esta acción no se puede deshacer.`,
+      "Sí, eliminar");
     if (!ok) return;
 
-    const propias = (actual.images || []).filter((u) => typeof u === "string" && u.includes(`/${BUCKET}/`));
+    const delAlmacen = [...(actual.images || []), actual.video]
+      .concat(...(actual.variants || []).map((m) => m.images || []));
+    const propias = delAlmacen.filter((u) => typeof u === "string" && u.includes(`/${BUCKET}/`));
     if (propias.length) await borrarDelAlmacen(propias);
 
     const { error } = await sb.from("properties").delete().eq("id", actual.id);

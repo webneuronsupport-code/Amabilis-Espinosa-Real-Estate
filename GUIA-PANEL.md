@@ -34,6 +34,16 @@ Eso crea la tabla de propiedades, las reglas de seguridad, el almacén de fotos 
 
 > Puedes volver a ejecutarlo cuando quieras: no duplica ni borra nada.
 
+4. Repite el mismo procedimiento —**New query**, pegar, **Run**— con estos dos archivos,
+   que agregan funciones que llegaron después:
+
+   | Archivo | Para qué sirve |
+   |---|---|
+   | `sql/variantes-tipos.sql` | Modelos dentro de una propiedad (Tipo A, Tipo B…) |
+   | `sql/recorrido-y-video.sql` | Recorrido 360° y video por propiedad |
+
+   Los tres son seguros de repetir: si ya los corriste, no pasa nada.
+
 ---
 
 ## 3. Conectar el sitio
@@ -117,6 +127,29 @@ botón **Duplicar**, cambia lo que sea distinto y guarda.
 ## Orden y destacadas
 - **Orden:** número más bajo, aparece antes.
 - **Destacada en la portada:** la incluye en el carrusel del inicio.
+
+## Modelos del desarrollo (Tipo A, Tipo B…)
+Cuando una misma propiedad ofrece varios modelos, no hagas una ficha por modelo:
+abre la propiedad, baja a **Modelos del desarrollo** y pulsa *+ Agregar modelo*.
+Cada modelo lleva su nombre, sus medidas, su texto y **sus propias fotos**.
+En la ficha pública aparecen como pestañas, y en el listado la tarjeta muestra
+cuántos modelos hay.
+
+Si la propiedad tiene un solo modelo, deja esa parte vacía.
+
+## Recorrido 360° y video
+En el bloque **Recorrido virtual y video** del editor:
+
+- **Recorrido 360°:** pega el enlace que te dé Kuula, Matterport o el servicio que uses.
+- **Video:** lo mejor es subirlo a **YouTube** —puede ser *oculto / no listado*, así no
+  sale en las búsquedas de YouTube— y pegar aquí el enlace. Es gratis, no consume tu
+  almacenamiento y se ve fluido hasta en celulares con poca señal. También funcionan
+  los enlaces de Vimeo.
+- Si prefieres subir el archivo, usa *o subir un archivo de video*: acepta hasta 45 MB.
+  Ten en cuenta que los videos propios sí consumen el plan gratuito de Supabase
+  (1 GB de almacenamiento y 5 GB de descargas al mes), así que úsalo con moderación.
+
+Lo que dejes vacío sencillamente no se muestra: la ficha no queda con huecos.
 
 ## Textos en inglés
 Al final del editor, en *Versión en inglés*. Lo que dejes vacío se mostrará en español.

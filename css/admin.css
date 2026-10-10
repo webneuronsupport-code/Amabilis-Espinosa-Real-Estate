@@ -247,3 +247,11 @@ img, video, iframe { max-width: 100%; }
 .soltar--modelo b { font-size: 14px; }
 .galeria--modelo { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-top: 12px; }
 .galeria--modelo .foto img { aspect-ratio: 4 / 3; }
+
+/* ---------- Subida de video ---------- */
+.subir-video { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: -4px; }
+.subir-video .pista { margin: 0; }
+
+/* Avisos de enlace mal escrito */
+.pista--error { color: #b3261e; }
+.pista--error:empty { display: none; }

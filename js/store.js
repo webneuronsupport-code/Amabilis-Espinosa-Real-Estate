@@ -38,6 +38,7 @@
         built: f.built == null ? null : Number(f.built),
         land: f.land == null ? null : Number(f.land),
         featured: !!f.featured, tag: texto(f.tag),
+        tour360: texto(f.tour360), video: texto(f.video),
         summary: texto(f.summary), description: texto(f.description),
         amenities: f.amenities || [], images: f.images || [], alts: f.alts || [],
         variants: (Array.isArray(f.variants) ? f.variants : []).map((m) => ({

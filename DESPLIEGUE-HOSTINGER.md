@@ -1,9 +1,12 @@
 # Subida a Hostinger
 
-El sitio es estático (HTML, CSS, JS e imágenes): no necesita Node, PHP ni base de datos
-en el servidor. Las propiedades viven en Supabase, así que Hostinger solo sirve archivos.
+El sitio es estático (HTML, CSS, JS e imágenes) y no necesita Node ni base de datos en
+el servidor: las propiedades viven en Supabase. Lo único que sí corre en Hostinger es
+`enviar.php`, que manda los correos de los formularios.
 
-**Paquete listo:** `C:\Users\javie\Desktop\amabilis-produccion.zip` (29 MB)
+**Paquete listo:** `C:\Users\javie\Desktop\amabilis-produccion.zip` (19.8 MB)
+
+Para volver a armarlo después de cualquier cambio: `python herramientas/empaquetar.py`
 
 ---
 
@@ -12,6 +15,7 @@ en el servidor. Las propiedades viven en Supabase, así que Hostinger solo sirve
 | # | Pendiente | Por qué importa |
 |---|---|---|
 | 1 | **Ejecutar `sql/solo-cuenta-autorizada.sql`** en el SQL Editor | El proyecto de Supabase es compartido con otra app: sin esto, cualquier usuario de esa app puede editar el catálogo del cliente |
+| 1b | **Ejecutar `sql/variantes-tipos.sql` y `sql/recorrido-y-video.sql`** | Agregan los modelos (Tipo A/B), el recorrido 360° y el video. Sin ellos el panel no puede guardar esos campos |
 | 2 | **Crear la cuenta `amabilisespinosa@gmail.com`** y borrar `prueba@amabilisespinosa.com` | Es la única forma de entrar al panel |
 | 3 | **Quitar la palabra «prueba»** del resumen de Residencial Grafito I | Quedó de la prueba de conexión y hoy se ve en la ficha y en Google |
 | 4 | **ID de Google Tag Manager** en `js/gtm.js` (hoy `GTM-XXXXXXX`) | Sin él no se mide ninguna conversión de las campañas |

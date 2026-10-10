@@ -326,6 +326,100 @@
       });
     });
 
+  /* ---------- Recorrido 360° y video de la propiedad ---------- */
+  // Nada de esto se descarga hasta que la persona lo pide: se muestra una
+  // portada ligera y el reproductor pesado se carga solo al pulsar.
+  // Las direcciones vienen del panel, pero igual se limpian: solo http(s) y
+  // con las comillas escapadas, para que nunca puedan romper el HTML.
+  const atrib = (s) => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const liga = (crudo) => {
+    const txt = String(crudo || "").trim();
+    if (!txt) return null;
+    // Sin "https://" delante, new URL() lo resolvería contra esta misma página
+    // y acabaríamos incrustando el sitio dentro de sí mismo.
+    const completo = /^https?:\/\//i.test(txt) ? txt : `https://${txt.replace(/^\/+/, "")}`;
+    try {
+      const u = new URL(completo);
+      if (!u.hostname.includes(".") || u.origin === location.origin) return null;
+      return u.href;
+    } catch { return null; }
+  };
+
+  const leerVideo = (crudo) => {
+    const url = liga(crudo);
+    if (!url) return null;
+    const yt = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{6,})/);
+    if (yt) return { tipo: "youtube", id: yt[1], embed: `https://www.youtube-nocookie.com/embed/${yt[1]}?autoplay=1&rel=0`, portada: `https://i.ytimg.com/vi/${yt[1]}/maxresdefault.jpg` };
+    const vm = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    if (vm) return { tipo: "vimeo", id: vm[1], embed: `https://player.vimeo.com/video/${vm[1]}?autoplay=1`, portada: "" };
+    if (/\.(mp4|webm|mov)(\?|$)/i.test(url)) return { tipo: "archivo", url };
+    return { tipo: "enlace", url };
+  };
+
+  const bloqueMedios = (p) => {
+    const v = leerVideo(p.video);
+    const tour = liga(p.tour360);
+    if (!v && !tour) return "";
+
+    // El recorrido es lo que más convence, así que va primero y a todo lo ancho.
+    const panel360 = !tour ? "" : `
+      <button class="tour" type="button" data-embed="${atrib(tour)}" data-alto="1" data-loc="property-360">
+        <span class="tour__sello"><b>360°</b></span>
+        <span class="tour__texto">
+          <span class="tour__titulo">${t("Recorrido virtual", "Virtual tour")}</span>
+          <span class="tour__sub">${t(
+            "Camina por la propiedad habitación por habitación, como si ya estuvieras dentro.",
+            "Walk through the property room by room, as if you were already inside.")}</span>
+          <span class="tour__cta">${t("Iniciar el recorrido", "Start the tour")} ${I.arrow}</span>
+        </span>
+        <span class="tour__pista">${t("Arrastra para mirar en cualquier dirección", "Drag to look around")}</span>
+      </button>`;
+
+    // El video se monta sobre un escenario oscuro: así se ve igual de
+    // intencional grabado en vertical con el celular que en horizontal.
+    const portada = !v ? "" : v.tipo === "enlace"
+      ? `<a class="escena__portada" href="${atrib(v.url)}" target="_blank" rel="noopener" data-loc="property-video">
+           <span class="medio__play">${I.play}</span>
+           <span class="medio__txt">${t("Ver el video", "Watch the video")}</span></a>`
+      : `<button class="escena__portada" type="button"
+           ${v.tipo === "archivo" ? `data-archivo="${atrib(v.url)}"` : `data-embed="${atrib(v.embed)}"`}
+           data-loc="property-video"
+           ${v.portada ? `style="background-image:url('${atrib(v.portada)}')"` : ""}>
+           <span class="medio__play">${I.play}</span>
+           <span class="medio__txt">${t("Ver el video", "Watch the video")}</span></button>`;
+
+    const escena = !v ? "" : `<div class="escena">${portada}</div>`;
+
+    return `
+      <h2 data-fade>${t("Conoce la propiedad por dentro", "Take a look inside")}</h2>
+      <div class="medios" data-fade>${panel360}${escena}</div>`;
+  };
+
+  // Sustituye la portada por el reproductor cuando se pulsa
+  const activarMedios = () => {
+    $$("[data-archivo]").forEach((b) => b.addEventListener("click", () => {
+      const video = document.createElement("video");
+      video.controls = true; video.autoplay = true; video.playsInline = true;
+      video.src = b.dataset.archivo;
+      b.replaceWith(video);
+      track("select_content", { content_type: b.dataset.loc });
+    }));
+
+    $$("[data-embed]").forEach((b) => b.addEventListener("click", () => {
+      const marco = document.createElement("div");
+      marco.className = b.dataset.alto ? "medio__marco medio__marco--alto" : "medio__marco";
+      const reproductor = document.createElement("iframe");
+      reproductor.allow = "accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; fullscreen; xr-spatial-tracking";
+      reproductor.allowFullscreen = true;
+      reproductor.loading = "lazy";
+      reproductor.title = b.textContent.replace(/\s+/g, " ").trim();
+      reproductor.src = b.dataset.embed;
+      marco.appendChild(reproductor);
+      b.replaceWith(marco);
+      track("select_content", { content_type: b.dataset.loc });
+    }));
+  };
+
   /* ---------- Render por página ---------- */
   const renderers = {
     home() {
@@ -429,6 +523,7 @@
           <div class="detail__price" data-fade>${fmtPrice(p)}</div>
           <h2 data-fade>Sobre la propiedad</h2>
           <p class="detail__desc" data-fade>${p.description}</p>
+          ${bloqueMedios(p)}
           <h2 data-fade>Características</h2>
           <ul class="amenities" data-fade>${p.amenities.map((a) => `<li>${I.check}${a}</li>`).join("")}</ul>
           ${(p.variants || []).length ? `
@@ -497,6 +592,8 @@
       });
       document.head.append(ld);
       lightbox(imgs.map((i) => imgSrc(i, 2000)), p.title, p.alts);
+
+      activarMedios();
 
       $$(".modelo").forEach((bloque) => {
         const m = p.variants[+bloque.dataset.modelo];

@@ -7,7 +7,7 @@
   <title>Panel de propiedades | Amábilis &amp; Espinosa</title>
   <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/admin.css?v=140">
+  <link rel="stylesheet" href="css/admin.css?v=144">
 </head>
 <body>
   <!-- ======================= ACCESO ======================= -->
@@ -118,6 +118,30 @@
         </section>
 
         <section class="bloque">
+          <h3>Recorrido virtual y video <small>(opcional)</small></h3>
+          <label class="campo">
+            <span>Recorrido 360°</span>
+            <input id="f-tour360" type="url" placeholder="https://kuula.co/share/...">
+          </label>
+          <p class="pista">Pega el enlace completo que te dé Kuula, Matterport o el servicio que uses.</p>
+          <p class="pista pista--error" id="avisoTour"></p>
+
+          <label class="campo">
+            <span>Video</span>
+            <input id="f-video" type="url" placeholder="https://www.youtube.com/watch?v=...">
+          </label>
+          <p class="pista">
+            Lo recomendable es subir el video a <b>YouTube</b> (puede ser oculto, no listado) y pegar
+            aquí el enlace: no consume tu almacenamiento y se ve fluido en cualquier teléfono.
+          </p>
+          <p class="pista pista--error" id="avisoVideoEnlace"></p>
+          <div class="subir-video">
+            <button class="btn btn--plano" id="btnVideo" type="button">o subir un archivo de video</button>
+            <span class="pista" id="avisoVideo"></span>
+          </div>
+        </section>
+
+        <section class="bloque">
           <h3>Modelos del desarrollo <small>(opcional)</small></h3>
           <p class="pista">
             Úsalo cuando una misma propiedad ofrece varios modelos —Tipo A, Tipo B…—, cada uno con
@@ -174,8 +198,8 @@
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="js/supabase-config.js?v=140"></script>
-  <script src="js/admin-demo.js?v=140"></script>
-  <script src="js/admin.js?v=140"></script>
+  <script src="js/supabase-config.js?v=144"></script>
+  <script src="js/admin-demo.js?v=144"></script>
+  <script src="js/admin.js?v=144"></script>
 </body>
 </html>

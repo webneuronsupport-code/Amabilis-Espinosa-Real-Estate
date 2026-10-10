@@ -1411,3 +1411,116 @@ a.contact-item:hover b { color: var(--brand-gold); }
   .modelo__head { flex-direction: column; gap: 8px; }
 }
 /* === FIN modelos === */
+
+/* === INICIO recorrido 360° y video === */
+.medios { display: grid; gap: 16px; margin: 18px 0 clamp(32px, 4vw, 48px); }
+
+/* --- Recorrido 360°: la pieza que más convence, a todo lo ancho --- */
+.tour {
+  position: relative; display: grid; gap: clamp(18px, 2.4vw, 28px);
+  grid-template-columns: auto 1fr; align-items: center;
+  width: 100%; border: 0; border-radius: 24px; cursor: pointer; overflow: hidden;
+  padding: clamp(26px, 4vw, 48px) clamp(22px, 4vw, 52px) clamp(52px, 5vw, 60px);
+  text-align: left; color: var(--cream); font-family: var(--f-body);
+  background:
+    radial-gradient(120% 140% at 88% 0%, rgba(197,164,96,.28), transparent 58%),
+    linear-gradient(135deg, #16294f 0%, #0d1a3a 48%, #0a1430 100%);
+  box-shadow: 0 30px 70px -50px rgba(10,20,48,.9);
+  transition: transform .5s var(--ease), box-shadow .5s var(--ease);
+}
+.tour::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(227,207,159,.22); border-radius: inherit;
+}
+.tour:hover { transform: translateY(-4px); box-shadow: 0 40px 80px -48px rgba(10,20,48,.95); }
+
+.tour__sello {
+  position: relative; display: grid; place-items: center; flex: none;
+  width: clamp(78px, 11vw, 104px); aspect-ratio: 1; border-radius: 50%;
+  background: rgba(247,242,234,.07); box-shadow: inset 0 0 0 1px var(--gold-soft);
+}
+.tour__sello b {
+  font-size: clamp(16px, 2vw, 21px); font-weight: 700; letter-spacing: .02em; color: var(--gold-soft);
+}
+/* Un halo lento que insinúa que la escena gira */
+.tour__sello::before {
+  content: ""; position: absolute; inset: -9px; border-radius: 50%;
+  border: 1px solid rgba(227,207,159,.3); border-top-color: transparent; border-left-color: transparent;
+  animation: tour-giro 7s linear infinite;
+}
+@keyframes tour-giro { to { transform: rotate(360deg); } }
+
+.tour__texto { display: grid; gap: 8px; }
+.tour__titulo {
+  font-family: var(--f-display); font-size: clamp(26px, 3.6vw, 40px); line-height: 1.06;
+}
+.tour__sub { max-width: 46ch; font-size: 15px; line-height: 1.6; color: rgba(247,242,234,.72); }
+.tour__cta {
+  display: inline-flex; align-items: center; gap: 10px; justify-self: start; margin-top: 8px;
+  padding: 11px 22px; border-radius: 99px; box-shadow: inset 0 0 0 1px var(--gold-soft);
+  font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold-soft);
+  transition: background .4s var(--ease), color .4s var(--ease);
+}
+.tour__cta svg { width: 16px; height: 16px; transition: transform .4s var(--ease); }
+.tour:hover .tour__cta { background: var(--gold-soft); color: var(--ink); }
+.tour:hover .tour__cta svg { transform: translateX(4px); }
+
+.tour__pista {
+  position: absolute; left: clamp(22px, 4vw, 52px); bottom: clamp(20px, 2.6vw, 28px);
+  font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: rgba(247,242,234,.42);
+}
+
+/* --- Video: el escenario lo sostiene igual en vertical que en horizontal --- */
+.escena {
+  display: grid; place-items: center; width: 100%; overflow: hidden;
+  border-radius: 24px; background: var(--ink);
+}
+.escena__portada {
+  position: relative; display: grid; place-content: center; justify-items: center; gap: 14px;
+  width: 100%; height: clamp(170px, 22vw, 250px); padding: 24px;
+  border: 0; cursor: pointer; text-align: center; text-decoration: none;
+  color: var(--cream); font-family: var(--f-body);
+  background: linear-gradient(135deg, #1b2440, #0a1430) center / cover no-repeat;
+  transition: opacity .4s var(--ease);
+}
+.escena__portada[style]::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(10,20,48,.3), rgba(10,20,48,.72));
+}
+.escena__portada > * { position: relative; z-index: 1; }
+.escena__portada:hover { opacity: .92; }
+
+.medio__play {
+  display: grid; place-items: center; width: 54px; height: 54px; border-radius: 50%;
+  background: rgba(247,242,234,.14); box-shadow: inset 0 0 0 1px var(--gold-soft);
+  color: var(--gold-soft);
+}
+.medio__play svg { width: 22px; height: 22px; }
+.medio__txt { font-size: 13px; letter-spacing: .14em; text-transform: uppercase; }
+
+/* Un video de celular es vertical y uno de dron horizontal: en vez de recortar
+   ninguno, se les respeta su forma y el fondo oscuro rellena lo que sobra. */
+.escena video {
+  display: block; width: auto; height: auto;
+  max-width: 100%; max-height: min(44svh, 360px);
+}
+.escena .medio__marco { border-radius: 0; }
+
+.medio__marco {
+  width: 100%; aspect-ratio: 16 / 9; border-radius: 24px; overflow: hidden; background: #000;
+}
+.medio__marco--alto { aspect-ratio: 16 / 10; max-height: min(78svh, 720px); }
+.medio__marco iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+@media (max-width: 720px) {
+  .tour { grid-template-columns: 1fr; gap: 16px; text-align: center; justify-items: center; }
+  .tour__texto { justify-items: center; }
+  .tour__cta { justify-self: center; }
+  .tour__pista { position: static; margin-top: 4px; }
+  .tour { padding: clamp(26px, 7vw, 36px) 22px 26px; }
+  .medio__marco--alto { aspect-ratio: 4 / 3; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tour__sello::before { animation: none; }
+}
+/* === FIN recorrido y video === */
