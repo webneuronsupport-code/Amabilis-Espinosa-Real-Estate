@@ -99,18 +99,25 @@
 
   /* ---------- Layout compartido ---------- */
 
-  // Redes sociales del negocio (un solo lugar para los tres bloques)
+  // Redes sociales del negocio (un solo lugar para los tres bloques).
+  // En la cabecera solo van las tres que de verdad generan contacto: ocho
+  // iconos la saturaban y además se repiten completas en el menú y el pie.
+  const REDES_CABECERA = ["whatsapp", "instagram", "facebook"];
   const redes = (donde = "header") => {
     const list = [
       ["WhatsApp", "whatsapp", "https://wa.me/message/KRFMQF62FODSJ1", I.wa],
       ["Facebook", "facebook", SITE.facebook, I.fb],
       ["Instagram", "instagram", SITE.instagram, I.ig],
       ["TikTok", "tiktok", SITE.tiktok, I.tt],
+      ["YouTube", "youtube", SITE.youtube, I.yt],
       ["X (Twitter)", "x", SITE.x, I.x],
       ["Threads", "threads", SITE.threads, I.threads],
       ["Telegram", "telegram", SITE.telegram, I.telegram],
     ];
-    return list.filter(item => item[2]).map(([nombre, red, url, icono]) => 
+    const visibles = donde === "header"
+      ? REDES_CABECERA.map((r) => list.find((i) => i[1] === r && i[2])).filter(Boolean)
+      : list.filter((item) => item[2]);
+    return visibles.map(([nombre, red, url, icono]) => 
       '<a href="' + url + '" target="_blank" rel="noopener" aria-label="' + nombre + '" data-red="' + red + '" data-loc="' + donde + '">' + icono + '</a>').join("");
   };
 

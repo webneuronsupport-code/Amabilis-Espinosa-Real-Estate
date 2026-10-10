@@ -7,7 +7,7 @@
   <title>Panel de propiedades | Amábilis &amp; Espinosa</title>
   <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/admin.css?v=144">
+  <link rel="stylesheet" href="css/admin.css?v=147">
 </head>
 <body>
   <!-- ======================= ACCESO ======================= -->
@@ -105,9 +105,14 @@
             <label class="campo"><span>Construcción (m²)</span><input id="f-built" type="number" min="0" step="1"></label>
             <label class="campo"><span>Terreno (m²)</span><input id="f-land" type="number" min="0" step="1"></label>
           </div>
-          <label class="campo"><span>Amenidades</span>
-            <input id="f-amenidad" placeholder="Escribe una y pulsa Enter (ej. Roof garden)">
-          </label>
+          <div class="campo"><span>Amenidades</span>
+            <div class="campo__fila">
+              <input id="f-amenidad" placeholder="Escribe una amenidad (ej. Roof garden)"
+                     enterkeyhint="done" autocomplete="off" aria-describedby="ayudaAmenidad">
+              <button type="button" class="btn btn--plano btn--agregar" id="btnAmenidad">+ Añadir</button>
+            </div>
+            <small id="ayudaAmenidad" class="campo__ayuda">Pulsa «+ Añadir» o Enter para agregar cada amenidad.</small>
+          </div>
           <div class="etiquetas" id="amenidades"></div>
         </section>
 
@@ -198,8 +203,8 @@
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="js/supabase-config.js?v=144"></script>
-  <script src="js/admin-demo.js?v=144"></script>
-  <script src="js/admin.js?v=144"></script>
+  <script src="js/supabase-config.js?v=147"></script>
+  <script src="js/admin-demo.js?v=147"></script>
+  <script src="js/admin.js?v=147"></script>
 </body>
 </html>

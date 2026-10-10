@@ -237,12 +237,36 @@
     $("#amenidades").innerHTML = amenidades.map((a, i) =>
       `<span class="etiqueta">${a}<button type="button" data-quitar="${i}" aria-label="Quitar ${a}">×</button></span>`).join("");
   };
+  // En el celular el Enter del teclado suele ser «Listo» y no agrega, así que
+  // el botón es la vía principal; el Enter se mantiene para quien usa teclado.
+  const agregarAmenidad = () => {
+    const campo = $("#f-amenidad");
+    // Sin separar por comas: amenidades reales las llevan dentro
+    // ("Cisterna de 13,000 lts.") y se partirían en dos.
+    const nueva = campo.value.trim();
+    if (!nueva) { campo.focus(); return; }
+
+    const repetida = amenidades.some((x) => x.toLowerCase() === nueva.toLowerCase());
+    if (!repetida) { amenidades.push(nueva); sucio = true; }
+
+    pintarAmenidades();
+    campo.value = "";
+    campo.focus(); // para seguir escribiendo la siguiente sin volver a tocar el campo
+
+    const aviso = $("#ayudaAmenidad");
+    if (aviso) {
+      aviso.textContent = repetida
+        ? `«${nueva}» ya estaba en la lista`
+        : "Pulsa «+ Añadir» o Enter para agregar cada amenidad.";
+      aviso.classList.toggle("campo__ayuda--aviso", repetida);
+    }
+  };
+
+  $("#btnAmenidad").addEventListener("click", agregarAmenidad);
   $("#f-amenidad").addEventListener("keydown", (e) => {
     if (e.key !== "Enter") return;
-    e.preventDefault();
-    const v = e.target.value.trim();
-    if (v && !amenidades.includes(v)) { amenidades.push(v); pintarAmenidades(); sucio = true; }
-    e.target.value = "";
+    e.preventDefault(); // si no, el formulario se envía
+    agregarAmenidad();
   });
   $("#amenidades").addEventListener("click", (e) => {
     const b = e.target.closest("[data-quitar]");

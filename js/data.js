@@ -15,7 +15,7 @@ const SITE = {
   instagram: "https://www.instagram.com/amabilisespinosaoficial?utm_source=qr&stkn=MWFva2Fja2F4YTgzaA==",
   facebook: "https://www.facebook.com/share/1DdjydeiPY/",
   tiktok: "https://tiktok.com/@amabilisespinosaoficial",
-  youtube: "https://www.youtube.com/",
+  youtube: "https://www.youtube.com/@amabilisespinosarealestate",
   x: "https://x.com/Homefindermx",
   threads: "https://www.threads.net/@amabilisespinosaoficial",
   telegram: "https://t.me/amabilisespinosaoficial",

@@ -137,6 +137,18 @@ code { background: rgba(10, 20, 48, .06); padding: 2px 6px; border-radius: 6px; 
 .campo input:focus, .campo select:focus, .campo textarea:focus { outline: 2px solid var(--oro); outline-offset: 1px; border-color: transparent; }
 .rejilla .campo { margin: 0; }
 
+/* Campo con botón al lado (amenidades): en el celular el botón pasa debajo
+   y ocupa todo el ancho, para que sea fácil de pulsar con el pulgar. */
+.campo__fila { display: flex; gap: 8px; align-items: stretch; }
+.campo__fila input { flex: 1 1 auto; min-width: 0; }
+.btn--agregar { flex: none; white-space: nowrap; padding: 0 18px; font-weight: 600; }
+.campo__ayuda { font-size: 12.5px; color: var(--tinta-70); margin-top: 2px; }
+.campo__ayuda--aviso { color: var(--peligro); font-weight: 600; }
+@media (max-width: 640px) {
+  .campo__fila { flex-wrap: wrap; }
+  .btn--agregar { width: 100%; min-height: 46px; }
+}
+
 .etiquetas { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .etiqueta { display: inline-flex; align-items: center; gap: 8px; background: rgba(10, 20, 48, .05); border-radius: 999px; padding: 7px 8px 7px 14px; font-size: 13.5px; }
 .etiqueta button { border: 0; background: rgba(10, 20, 48, .1); width: 22px; height: 22px; border-radius: 50%; cursor: pointer; font-size: 13px; line-height: 1; color: var(--tinta); }
