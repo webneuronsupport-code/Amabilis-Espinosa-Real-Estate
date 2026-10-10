@@ -229,3 +229,21 @@ img, video, iframe { max-width: 100%; }
 
 /* Aviso de propiedad sin traducción: en inglés se verá el texto en español */
 .insignia--sin-ingles { background: rgba(197, 163, 94, .22); color: #7d6020; }
+
+/* ---------- Modelos del desarrollo (Tipo A, Tipo B…) ---------- */
+.modelo-edit {
+  border: 1px solid var(--linea); border-radius: 14px; padding: clamp(16px, 2vw, 22px);
+  margin-bottom: 14px; background: rgba(10, 20, 48, .015);
+}
+.modelo-edit__head {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  flex-wrap: wrap; margin-bottom: 14px;
+}
+.modelo-edit__head b { font-family: var(--display); font-size: 19px; font-weight: 500; }
+.modelo-edit__acciones { display: flex; gap: 6px; }
+.modelo-edit__acciones .btn { min-height: 34px; padding: 0 12px; font-size: 12.5px; }
+.campo__titulo { display: block; font-size: 13px; font-weight: 600; color: var(--tinta-70); margin: 16px 0 8px; }
+.soltar--modelo { padding: 18px 16px; }
+.soltar--modelo b { font-size: 14px; }
+.galeria--modelo { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-top: 12px; }
+.galeria--modelo .foto img { aspect-ratio: 4 / 3; }

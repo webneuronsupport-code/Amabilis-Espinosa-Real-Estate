@@ -7,7 +7,7 @@
   <title>Panel de propiedades | Amábilis &amp; Espinosa</title>
   <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/admin.css?v=139">
+  <link rel="stylesheet" href="css/admin.css?v=140">
 </head>
 <body>
   <!-- ======================= ACCESO ======================= -->
@@ -118,6 +118,16 @@
         </section>
 
         <section class="bloque">
+          <h3>Modelos del desarrollo <small>(opcional)</small></h3>
+          <p class="pista">
+            Úsalo cuando una misma propiedad ofrece varios modelos —Tipo A, Tipo B…—, cada uno con
+            sus medidas, su texto y sus propias fotos. Si solo hay un modelo, deja esto vacío.
+          </p>
+          <div id="modelos"></div>
+          <button class="btn btn--plano" id="btnModelo" type="button">+ Agregar modelo</button>
+        </section>
+
+        <section class="bloque">
           <h3>Publicación</h3>
           <div class="interruptores">
             <label class="interruptor"><input type="checkbox" id="f-published" checked><span>Visible en el sitio</span></label>
@@ -164,8 +174,8 @@
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="js/supabase-config.js?v=139"></script>
-  <script src="js/admin-demo.js?v=139"></script>
-  <script src="js/admin.js?v=139"></script>
+  <script src="js/supabase-config.js?v=140"></script>
+  <script src="js/admin-demo.js?v=140"></script>
+  <script src="js/admin.js?v=140"></script>
 </body>
 </html>

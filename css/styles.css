@@ -1368,3 +1368,46 @@ a.contact-item:hover b { color: var(--brand-gold); }
   text-underline-offset: 3px;
 }
 .form__wa:hover { color: #0e6c39; }
+
+/* === INICIO modelos de un desarrollo (Tipo A, Tipo B…) === */
+.modelos { display: grid; gap: clamp(20px, 2.4vw, 32px); margin: 18px 0 clamp(36px, 4vw, 56px); }
+.modelo {
+  border: 1px solid var(--line); border-radius: 20px; overflow: hidden;
+  background: #fff; transition: box-shadow .4s var(--ease);
+}
+.modelo:hover { box-shadow: 0 26px 60px -44px rgba(10, 20, 48, .5); }
+.modelo__head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  padding: clamp(18px, 2vw, 24px) clamp(18px, 2.2vw, 28px) 0;
+}
+.modelo__head h3 { font-family: var(--f-display); font-weight: 400; font-size: clamp(22px, 2vw, 28px); margin: 0; color: var(--ink); }
+.modelo__datos {
+  font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+  padding: 7px 14px; border-radius: 999px; background: rgba(10, 20, 48, .05);
+}
+.modelo__texto {
+  margin: 12px 0 0; padding: 0 clamp(18px, 2.2vw, 28px);
+  color: var(--muted); font-size: 15px; line-height: 1.75; max-width: 70ch;
+}
+.modelo__fotos {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px;
+  padding: clamp(16px, 2vw, 22px);
+}
+.modelo__foto { padding: 0; border: 0; background: none; border-radius: 12px; overflow: hidden; cursor: pointer; }
+.modelo__foto img {
+  display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+  transition: transform .8s var(--ease);
+}
+.modelo__foto:hover img { transform: scale(1.06); }
+.modelo__foto:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+.prop-card__modelos {
+  margin: 10px 0 0; font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--brand-gold); font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .modelo__fotos { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 6px; }
+  .modelo__head { flex-direction: column; gap: 8px; }
+}
+/* === FIN modelos === */

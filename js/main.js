@@ -227,6 +227,7 @@
         <div class="prop-card__loc">${[T.tr(p.type), T.tr(p.zone)].filter(Boolean).join(" · ")}</div>
         <div class="prop-card__title">${p.title}</div>
         <div class="prop-card__specs">${specsHTML(p)}</div>
+        ${p.variants?.length > 1 ? `<p class="prop-card__modelos">${p.variants.length} ${t("modelos disponibles", "models available")}</p>` : ""}
         ${p.summary ? `<p class="prop-card__sum">${p.summary}</p>` : ""}
       </div>
     </a>`;
@@ -430,6 +431,28 @@
           <p class="detail__desc" data-fade>${p.description}</p>
           <h2 data-fade>Características</h2>
           <ul class="amenities" data-fade>${p.amenities.map((a) => `<li>${I.check}${a}</li>`).join("")}</ul>
+          ${(p.variants || []).length ? `
+            <h2 data-fade>${t("Modelos disponibles", "Available models")}</h2>
+            <div class="modelos">
+              ${p.variants.map((m, k) => `
+                <article class="modelo" data-fade data-modelo="${k}">
+                  <header class="modelo__head">
+                    <h3>${m.name || `${t("Tipo", "Type")} ${String.fromCharCode(65 + k)}`}</h3>
+                    <div class="modelo__datos">${[
+                      m.built ? `${m.built} m²` : "",
+                      m.beds ? `${m.beds} ${t("rec.", "bd")}` : "",
+                      m.baths ? `${m.baths} ${t("baños", "ba")}` : "",
+                      m.parking ? `${m.parking} ${t("autos", "cars")}` : "",
+                    ].filter(Boolean).join(" · ")}</div>
+                  </header>
+                  ${m.description ? `<p class="modelo__texto">${m.description}</p>` : ""}
+                  ${m.images?.length ? `<div class="modelo__fotos">${m.images.map((src, i) => `
+                    <button class="modelo__foto" data-i="${i}" data-cursor="${t("Ampliar", "Zoom")}" aria-label="${t("Ver foto", "View photo")} ${i + 1}">
+                      <img src="${imgSrc(src, 600)}" alt="${m.alts?.[i] || `${m.name} — ${t("foto", "photo")} ${i + 1}`}" loading="lazy">
+                    </button>`).join("")}</div>` : ""}
+                </article>`).join("")}
+            </div>` : ""}
+
           <h2 data-fade>Ubicación</h2>
           <div class="map" data-fade><iframe loading="lazy" title="Mapa de ${p.location}" src="https://maps.google.com/maps?q=${encodeURIComponent(p.location)}&z=13&output=embed"></iframe></div>
         </div>
@@ -474,6 +497,13 @@
       });
       document.head.append(ld);
       lightbox(imgs.map((i) => imgSrc(i, 2000)), p.title, p.alts);
+
+      $$(".modelo").forEach((bloque) => {
+        const m = p.variants[+bloque.dataset.modelo];
+        $$(".modelo__foto", bloque).forEach((b) => b.addEventListener("click", () => {
+          window.__visor?.(m.images.map((i) => imgSrc(i, 2000)), m.name, m.alts, +b.dataset.i);
+        }));
+      });
     },
 
     blog() {
@@ -577,6 +607,7 @@
   }
 
   function lightbox(srcs, title, alts) {
+    const galeriaPrincipal = srcs, altsPrincipales = alts;
     const lb = document.createElement("div");
     lb.className = "lightbox";
     lb.setAttribute("role", "dialog");
@@ -595,8 +626,16 @@
       if (hasGSAP && !reduced) gsap.fromTo(img, { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.6, ease: "expo.out" });
     };
     const close = () => { lb.classList.remove("is-open"); document.body.classList.remove("is-locked"); };
+
+    // Permite abrir el visor con otro conjunto de fotos (los tipos del desarrollo)
+    const abrir = (fotos, titulo, textos, i = 0) => {
+      srcs = fotos; title = titulo || title; alts = textos || [];
+      lb.classList.add("is-open"); document.body.classList.add("is-locked"); go(i);
+    };
+    window.__visor = abrir;
+
     $$(".gallery__item").forEach((g) => g.addEventListener("click", () => {
-      lb.classList.add("is-open"); document.body.classList.add("is-locked"); go(+g.dataset.index);
+      abrir(galeriaPrincipal, title, altsPrincipales, +g.dataset.index);
     }));
     $(".lightbox__close", lb).addEventListener("click", close);
     $(".lightbox__prev", lb).addEventListener("click", () => go(idx - 1));

@@ -40,8 +40,19 @@
         featured: !!f.featured, tag: texto(f.tag),
         summary: texto(f.summary), description: texto(f.description),
         amenities: f.amenities || [], images: f.images || [], alts: f.alts || [],
+        variants: (Array.isArray(f.variants) ? f.variants : []).map((m) => ({
+          name: texto(m.name), description: texto(m.description),
+          built: m.built == null ? null : Number(m.built),
+          beds: m.beds == null ? null : Number(m.beds),
+          baths: m.baths == null ? null : Number(m.baths),
+          parking: m.parking == null ? null : Number(m.parking),
+          images: Array.isArray(m.images) ? m.images : [],
+          alts: Array.isArray(m.alts) ? m.alts : [],
+          en: m.en || null,
+        })),
       };
       if (en && f.en) Object.assign(p, f.en); // traducciones cargadas desde el panel
+      if (en) p.variants = p.variants.map((m) => (m.en ? { ...m, ...m.en } : m));
       return p;
     });
   };

@@ -23,6 +23,7 @@
   let esNueva = false;
   let amenidades = [];
   let fotos = [];         // [{ src, alt }]
+  let modelos = [];       // [{ name, built, beds, baths, parking, description, images[], alts[], en }]
   let sucio = false;      // hay cambios sin guardar
 
   /* ---------- Utilidades ---------- */
@@ -207,6 +208,8 @@
     valor("#f-en-summary", en.summary); valor("#f-en-description", en.description);
 
     amenidades = [...(actual.amenities || [])];
+    modelos = JSON.parse(JSON.stringify(actual.variants || []));
+    pintarModelos();
     fotos = (actual.images || []).map((src, i) => ({ src, alt: (actual.alts || [])[i] || "" }));
     pintarAmenidades(); pintarGaleria();
     avisar("#avisoForm", ""); avisar("#avisoFotos", "");
@@ -242,6 +245,118 @@
     const b = e.target.closest("[data-quitar]");
     if (!b) return;
     amenidades.splice(+b.dataset.quitar, 1); pintarAmenidades(); sucio = true;
+  });
+
+  /* ---------- Modelos del desarrollo ---------- */
+  const letra = (i) => String.fromCharCode(65 + i);
+
+  const pintarModelos = () => {
+    const cont = $("#modelos");
+    if (!cont) return;
+    cont.innerHTML = modelos.map((m, k) => `
+      <article class="modelo-edit" data-m="${k}">
+        <header class="modelo-edit__head">
+          <b>${m.name || "Tipo " + letra(k)}</b>
+          <div class="modelo-edit__acciones">
+            ${k > 0 ? `<button type="button" class="btn btn--plano" data-subir="${k}" aria-label="Subir">↑</button>` : ""}
+            ${k < modelos.length - 1 ? `<button type="button" class="btn btn--plano" data-bajar="${k}" aria-label="Bajar">↓</button>` : ""}
+            <button type="button" class="btn btn--peligro" data-quitar-modelo="${k}">Quitar</button>
+          </div>
+        </header>
+        <div class="rejilla">
+          <label class="campo"><span>Nombre del modelo</span><input data-c="name" value="${(m.name || "").replace(/"/g, "&quot;")}" placeholder="Tipo ${letra(k)}"></label>
+          <label class="campo"><span>Construcción (m²)</span><input data-c="built" type="number" min="0" step="1" value="${m.built ?? ""}"></label>
+          <label class="campo"><span>Recámaras</span><input data-c="beds" type="number" min="0" step="1" value="${m.beds ?? ""}"></label>
+          <label class="campo"><span>Baños</span><input data-c="baths" type="number" min="0" step="0.5" value="${m.baths ?? ""}"></label>
+          <label class="campo"><span>Estacionamientos</span><input data-c="parking" type="number" min="0" step="1" value="${m.parking ?? ""}"></label>
+        </div>
+        <label class="campo"><span>Descripción</span><textarea data-c="description" rows="4">${m.description || ""}</textarea></label>
+        <label class="campo"><span>Descripción en inglés (opcional)</span><textarea data-en="description" rows="3">${(m.en && m.en.description) || ""}</textarea></label>
+
+        <span class="campo__titulo">Fotos de este modelo</span>
+        <div class="soltar soltar--modelo" data-soltar="${k}" tabindex="0" role="button">
+          <b>Arrastra las fotos del ${m.name || "Tipo " + letra(k)}</b>
+          <span>se optimizan solas al subirlas</span>
+        </div>
+        <div class="galeria galeria--modelo">
+          ${(m.images || []).map((src, i) => `
+            <figure class="foto">
+              <button class="foto__quitar" type="button" data-qf="${k}:${i}" aria-label="Quitar">×</button>
+              <img src="${verFoto(src, 400)}" alt="">
+            </figure>`).join("")}
+        </div>
+      </article>`).join("");
+  };
+
+  $("#btnModelo")?.addEventListener("click", () => {
+    modelos.push({ name: "Tipo " + letra(modelos.length), built: null, beds: null, baths: null, parking: null, description: "", images: [], alts: [], en: null });
+    pintarModelos();
+    sucio = true;
+  });
+
+  $("#modelos")?.addEventListener("input", (e) => {
+    const art = e.target.closest("[data-m]");
+    if (!art) return;
+    const m = modelos[+art.dataset.m];
+    const campo = e.target.dataset.c, ingles = e.target.dataset.en;
+    if (campo) {
+      const v = e.target.value;
+      m[campo] = e.target.type === "number" ? (v === "" ? null : Number(v)) : v;
+    } else if (ingles) {
+      m.en = m.en || {};
+      m.en[ingles] = e.target.value;
+    }
+    sucio = true;
+  });
+
+  $("#modelos")?.addEventListener("click", async (e) => {
+    const quitar = e.target.closest("[data-quitar-modelo]");
+    const subir = e.target.closest("[data-subir]");
+    const bajar = e.target.closest("[data-bajar]");
+    const quitarFoto = e.target.closest("[data-qf]");
+
+    if (quitar) {
+      const k = +quitar.dataset.quitarModelo;
+      if (!(await confirmar("¿Quitar el modelo?", `Se eliminará «${modelos[k].name || "Tipo " + letra(k)}» con sus fotos al guardar.`))) return;
+      const propias = (modelos[k].images || []).filter((u) => String(u).includes(`/${BUCKET}/`));
+      modelos.splice(k, 1);
+      pintarModelos(); sucio = true;
+      if (propias.length) borrarDelAlmacen(propias);
+    }
+    if (subir)  { const k = +subir.dataset.subir;  [modelos[k - 1], modelos[k]] = [modelos[k], modelos[k - 1]]; pintarModelos(); sucio = true; }
+    if (bajar)  { const k = +bajar.dataset.bajar;  [modelos[k + 1], modelos[k]] = [modelos[k], modelos[k + 1]]; pintarModelos(); sucio = true; }
+    if (quitarFoto) {
+      const [k, i] = quitarFoto.dataset.qf.split(":").map(Number);
+      const url = modelos[k].images[i];
+      modelos[k].images.splice(i, 1);
+      (modelos[k].alts || []).splice(i, 1);
+      pintarModelos(); sucio = true;
+      if (url && String(url).includes(`/${BUCKET}/`)) borrarDelAlmacen([url]);
+    }
+    const zona = e.target.closest("[data-soltar]");
+    if (zona) $(`#archivosModelo`).dataset.modelo = zona.dataset.soltar, $("#archivosModelo").click();
+  });
+
+  // Entrada de archivos compartida por todos los modelos
+  const entradaModelo = document.createElement("input");
+  entradaModelo.type = "file"; entradaModelo.accept = "image/*"; entradaModelo.multiple = true;
+  entradaModelo.id = "archivosModelo"; entradaModelo.hidden = true;
+  document.body.appendChild(entradaModelo);
+  entradaModelo.addEventListener("change", async (e) => {
+    const k = +entradaModelo.dataset.modelo;
+    await subirAModelo(k, e.target.files);
+    e.target.value = "";
+  });
+
+  $("#modelos")?.addEventListener("dragover", (e) => {
+    const z = e.target.closest("[data-soltar]"); if (!z) return;
+    e.preventDefault(); z.classList.add("es-encima");
+  });
+  $("#modelos")?.addEventListener("dragleave", (e) => e.target.closest("[data-soltar]")?.classList.remove("es-encima"));
+  $("#modelos")?.addEventListener("drop", (e) => {
+    const z = e.target.closest("[data-soltar]"); if (!z) return;
+    e.preventDefault(); z.classList.remove("es-encima");
+    subirAModelo(+z.dataset.soltar, e.dataTransfer.files);
   });
 
   /* ---------- Fotografías ---------- */
@@ -293,6 +408,43 @@
     } catch (e) {
       return archivo; // formato que el navegador no sabe abrir (HEIC de iPhone, por ejemplo)
     }
+  };
+
+  // Sube un grupo de archivos y devuelve las direcciones públicas.
+  // Lo usan tanto la galería principal como la de cada modelo.
+  const subirArchivos = async (archivos, carpeta, aviso) => {
+    const validos = [...archivos].filter((a) => /^image\//.test(a.type));
+    const urls = [];
+    let ahorro = 0, pesadas = 0, n = 0;
+
+    for (const original of validos) {
+      n++;
+      if (aviso) aviso(`Subiendo ${n} de ${validos.length}…`);
+      const archivo = await optimizar(original);
+      ahorro += original.size - archivo.size;
+      if (archivo.size > 8 * 1024 * 1024) { pesadas++; continue; }
+
+      const ext = (archivo.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+      const ruta = `${carpeta}/${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}.${ext}`;
+      const { error } = await sb.storage.from(BUCKET).upload(ruta, archivo, { cacheControl: "31536000", upsert: false });
+      if (error) { avisar("#avisoFotos", "No se pudo subir " + original.name + ": " + error.message); continue; }
+      urls.push(sb.storage.from(BUCKET).getPublicUrl(ruta).data.publicUrl);
+    }
+    return { urls, ahorro, pesadas, total: validos.length };
+  };
+
+  const subirAModelo = async (k, archivos) => {
+    const zona = $(`[data-soltar="${k}"]`);
+    const original = zona ? zona.innerHTML : "";
+    const carpeta = `${idParaFotos()}/modelo-${k + 1}`;
+    const r = await subirArchivos(archivos, carpeta, (txt) => { if (zona) zona.innerHTML = `<b>${txt}</b>`; });
+    if (zona) zona.innerHTML = original;
+    if (!r.urls.length) return;
+    modelos[k].images = (modelos[k].images || []).concat(r.urls);
+    modelos[k].alts = (modelos[k].alts || []).concat(r.urls.map(() => ""));
+    pintarModelos();
+    sucio = true;
+    brindis(`${r.urls.length} foto(s) agregadas al modelo. Recuerda guardar.`);
   };
 
   const subir = async (archivos) => {
@@ -421,6 +573,13 @@
       summary: $("#f-summary").value.trim(),
       description: $("#f-description").value.trim(),
       amenities: amenidades,
+      variants: modelos.map((m) => ({
+        name: m.name || "",
+        built: m.built ?? null, beds: m.beds ?? null, baths: m.baths ?? null, parking: m.parking ?? null,
+        description: m.description || "",
+        images: m.images || [], alts: m.alts || [],
+        en: m.en && Object.values(m.en).some(Boolean) ? m.en : null,
+      })),
       images: fotos.map((f) => f.src),
       alts: fotos.map((f) => f.alt || ""),
       en: hayEn ? Object.fromEntries(Object.entries(en).filter(([, v]) => v)) : null,
