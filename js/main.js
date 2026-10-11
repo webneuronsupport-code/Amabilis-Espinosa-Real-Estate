@@ -212,10 +212,20 @@
   document.body.append(wa);
 
   /* ---------- Componentes ---------- */
+  // Baños enteros y medios. Las fichas viejas guardaban el medio como decimal
+  // (2.5 = dos y medio), así que se sigue leyendo ese formato además del campo
+  // nuevo; una propiedad puede estar en cualquiera de los dos.
+  const banos = (o) => {
+    const n = Number(o.baths) || 0;
+    return { enteros: Math.floor(n), medios: (n % 1 >= 0.5 ? 1 : 0) + (Number(o.halfBaths) || 0) };
+  };
+
   const specsHTML = (p) => {
     const s = [];
     if (p.beds) s.push(`<span>${I.bed}${p.beds} ${t("rec.", "bd")}</span>`);
-    if (p.baths) s.push(`<span>${I.bath}${p.baths} ${t("baños", "ba")}</span>`);
+    const b = banos(p);
+    if (b.enteros || b.medios)
+      s.push(`<span>${I.bath}${b.enteros}${b.medios ? "½" : ""} ${t("baños", "ba")}</span>`);
     if (p.built) s.push(`<span>${I.area}${p.built} m²</span>`);
     else if (p.land) s.push(`<span>${I.land}${p.land.toLocaleString("es-MX")} m²</span>`);
     return s.join("");
@@ -509,7 +519,9 @@
       const propertyMsg = t(`Hola, me interesa la propiedad "${p.title}" (${location.href}). ¿Me pueden dar más información?`, `Hi, I'm interested in the property "${p.title}" (${location.href}). Could you send me more information?`);
       const specs = [
         p.beds && [I.bed, p.beds, "Recámaras"],
-        p.baths && [I.bath, p.baths, "Baños"],
+        banos(p).enteros && [I.bath, banos(p).enteros, "Baños"],
+        banos(p).medios && [I.bath, banos(p).medios,
+          banos(p).medios === 1 ? "Medio baño" : "Medios baños"],
         p.parking && [I.car, p.parking, "Estacionamientos"],
         p.built && [I.area, `${p.built.toLocaleString("es-MX")} m²`, "Construcción"],
         p.land && [I.land, `${p.land.toLocaleString("es-MX")} m²`, "Terreno"],
@@ -543,7 +555,9 @@
                     <div class="modelo__datos">${[
                       m.built ? `${m.built} m²` : "",
                       m.beds ? `${m.beds} ${t("rec.", "bd")}` : "",
-                      m.baths ? `${m.baths} ${t("baños", "ba")}` : "",
+                      banos(m).enteros ? `${banos(m).enteros} ${t("baños", "ba")}` : "",
+                      banos(m).medios ? `${banos(m).medios} ${banos(m).medios === 1
+                        ? t("medio baño", "half bath") : t("medios baños", "half baths")}` : "",
                       m.parking ? `${m.parking} ${t("autos", "cars")}` : "",
                     ].filter(Boolean).join(" · ")}</div>
                   </header>

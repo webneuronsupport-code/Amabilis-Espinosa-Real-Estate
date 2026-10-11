@@ -196,7 +196,13 @@
 
     valor("#f-title", actual.title); valor("#f-zone", actual.zone); valor("#f-location", actual.location);
     valor("#f-price", actual.price); valor("#f-tag", actual.tag);
-    valor("#f-beds", actual.beds); valor("#f-baths", actual.baths); valor("#f-parking", actual.parking);
+    valor("#f-beds", actual.beds); valor("#f-parking", actual.parking);
+    // El medio baño se guardaba como decimal (2.5). Al abrir la ficha se
+    // separa en los dos campos; al guardar queda ya en el formato nuevo.
+    const bañosCrudo = actual.baths == null ? null : Number(actual.baths);
+    const medioEnDecimal = bañosCrudo != null && bañosCrudo % 1 >= 0.5 ? 1 : 0;
+    valor("#f-baths", bañosCrudo == null ? null : Math.floor(bañosCrudo));
+    valor("#f-half-baths", (Number(actual.half_baths) || 0) + medioEnDecimal || null);
     valor("#f-built", actual.built); valor("#f-land", actual.land);
     valor("#f-summary", actual.summary); valor("#f-description", actual.description);
     valor("#f-tour360", actual.tour360); valor("#f-video", actual.video);
@@ -294,7 +300,8 @@
           <label class="campo"><span>Nombre del modelo</span><input data-c="name" value="${(m.name || "").replace(/"/g, "&quot;")}" placeholder="Tipo ${letra(k)}"></label>
           <label class="campo"><span>Construcción (m²)</span><input data-c="built" type="number" min="0" step="1" value="${m.built ?? ""}"></label>
           <label class="campo"><span>Recámaras</span><input data-c="beds" type="number" min="0" step="1" value="${m.beds ?? ""}"></label>
-          <label class="campo"><span>Baños</span><input data-c="baths" type="number" min="0" step="0.5" value="${m.baths ?? ""}"></label>
+          <label class="campo"><span>Baños</span><input data-c="baths" type="number" min="0" step="1" value="${m.baths ?? ""}"></label>
+          <label class="campo"><span>Medios baños</span><input data-c="halfBaths" type="number" min="0" step="1" placeholder="0" value="${m.halfBaths ?? ""}"></label>
           <label class="campo"><span>Estacionamientos</span><input data-c="parking" type="number" min="0" step="1" value="${m.parking ?? ""}"></label>
         </div>
         <label class="campo"><span>Descripción</span><textarea data-c="description" rows="4">${m.description || ""}</textarea></label>
@@ -316,7 +323,7 @@
   };
 
   $("#btnModelo")?.addEventListener("click", () => {
-    modelos.push({ name: "Tipo " + letra(modelos.length), built: null, beds: null, baths: null, parking: null, description: "", images: [], alts: [], en: null });
+    modelos.push({ name: "Tipo " + letra(modelos.length), built: null, beds: null, baths: null, halfBaths: null, parking: null, description: "", images: [], alts: [], en: null });
     pintarModelos();
     sucio = true;
   });
@@ -648,6 +655,7 @@
       operation: $("#f-operation").value,
       price: numero("#f-price"),
       beds: numero("#f-beds"), baths: numero("#f-baths"), parking: numero("#f-parking"),
+      half_baths: numero("#f-half-baths"),
       built: numero("#f-built"), land: numero("#f-land"),
       featured: $("#f-featured").checked,
       published: $("#f-published").checked,
@@ -659,7 +667,8 @@
       amenities: amenidades,
       variants: modelos.map((m) => ({
         name: m.name || "",
-        built: m.built ?? null, beds: m.beds ?? null, baths: m.baths ?? null, parking: m.parking ?? null,
+        built: m.built ?? null, beds: m.beds ?? null, baths: m.baths ?? null,
+        halfBaths: m.halfBaths ?? null, parking: m.parking ?? null,
         description: m.description || "",
         images: m.images || [], alts: m.alts || [],
         en: m.en && Object.values(m.en).some(Boolean) ? m.en : null,

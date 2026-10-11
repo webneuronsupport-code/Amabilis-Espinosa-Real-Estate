@@ -280,6 +280,8 @@
     /* ---- Ficha ---- */
     "Recámaras": "Bedrooms",
     "Baños": "Bathrooms",
+    "Medio baño": "Half bath",
+    "Medios baños": "Half baths",
     "Estacionamientos": "Parking spaces",
     "Construcción": "Built area",
     "Sobre la propiedad": "About the property",

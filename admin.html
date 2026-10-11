@@ -7,7 +7,7 @@
   <title>Panel de propiedades | Amábilis &amp; Espinosa</title>
   <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/admin.css?v=147">
+  <link rel="stylesheet" href="css/admin.css?v=148">
 </head>
 <body>
   <!-- ======================= ACCESO ======================= -->
@@ -100,7 +100,8 @@
           <h3>Características</h3>
           <div class="rejilla rejilla--numeros">
             <label class="campo"><span>Recámaras</span><input id="f-beds" type="number" min="0" step="1"></label>
-            <label class="campo"><span>Baños</span><input id="f-baths" type="number" min="0" step="0.5"></label>
+            <label class="campo"><span>Baños</span><input id="f-baths" type="number" min="0" step="1"></label>
+            <label class="campo"><span>Medios baños</span><input id="f-half-baths" type="number" min="0" step="1" placeholder="0"></label>
             <label class="campo"><span>Estacionamientos</span><input id="f-parking" type="number" min="0" step="1"></label>
             <label class="campo"><span>Construcción (m²)</span><input id="f-built" type="number" min="0" step="1"></label>
             <label class="campo"><span>Terreno (m²)</span><input id="f-land" type="number" min="0" step="1"></label>
@@ -203,8 +204,8 @@
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="js/supabase-config.js?v=147"></script>
-  <script src="js/admin-demo.js?v=147"></script>
-  <script src="js/admin.js?v=147"></script>
+  <script src="js/supabase-config.js?v=148"></script>
+  <script src="js/admin-demo.js?v=148"></script>
+  <script src="js/admin.js?v=148"></script>
 </body>
 </html>
