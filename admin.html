@@ -7,7 +7,7 @@
   <title>Panel de propiedades | Amábilis &amp; Espinosa</title>
   <link rel="icon" href="img/favicon.svg" type="image/svg+xml">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/admin.css?v=148">
+  <link rel="stylesheet" href="css/admin.css?v=149">
 </head>
 <body>
   <!-- ======================= ACCESO ======================= -->
@@ -93,6 +93,18 @@
             <label class="campo"><span>Ubicación (como se muestra)</span><input id="f-location" placeholder="Metepec, Estado de México"></label>
             <label class="campo"><span>Precio en pesos *</span><input id="f-price" type="number" min="0" step="1000" required></label>
             <label class="campo"><span>Etiqueta</span><input id="f-tag" placeholder="Nuevo, Exclusiva, Preventa…"></label>
+            <label class="campo"><span>Disponibilidad</span>
+              <select id="f-availability">
+                <option value="">Sin especificar</option>
+                <option value="inmediata">Entrega inmediata</option>
+                <option value="preventa">Preventa · en construcción</option>
+                <option value="acondicionamiento">En acondicionamiento</option>
+                <option value="ocupada">Ocupada · sujeta a desocupación</option>
+              </select>
+            </label>
+            <label class="campo campo--ancho"><span>Plazo o detalle <small>(opcional)</small></span>
+              <input id="f-availability-note" placeholder="Entrega estimada: marzo 2026 · Aprox. 2 meses">
+            </label>
           </div>
         </section>
 
@@ -174,6 +186,8 @@
           <label class="campo"><span>Etiqueta</span><input id="f-en-tag" placeholder="New, Exclusive, Pre-sale…"></label>
           <label class="campo"><span>Resumen</span><textarea id="f-en-summary" rows="2"></textarea></label>
           <label class="campo"><span>Descripción</span><textarea id="f-en-description" rows="5"></textarea></label>
+          <label class="campo"><span>Plazo o detalle de disponibilidad</span>
+            <input id="f-en-availability-note" placeholder="Estimated handover: March 2026"></label>
         </details>
 
         <p class="aviso" id="avisoForm" role="alert" hidden></p>
@@ -204,8 +218,8 @@
   </section>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="js/supabase-config.js?v=148"></script>
-  <script src="js/admin-demo.js?v=148"></script>
-  <script src="js/admin.js?v=148"></script>
+  <script src="js/supabase-config.js?v=149"></script>
+  <script src="js/admin-demo.js?v=149"></script>
+  <script src="js/admin.js?v=149"></script>
 </body>
 </html>

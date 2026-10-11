@@ -1412,6 +1412,32 @@ a.contact-item:hover b { color: var(--brand-gold); }
 }
 /* === FIN modelos === */
 
+/* === INICIO disponibilidad === */
+/* Franja en la ficha, justo debajo del precio: tras saber cuánto cuesta,
+   lo siguiente que pregunta el comprador es cuándo puede mudarse. */
+.dispo {
+  display: flex; align-items: flex-start; gap: 14px;
+  margin: 0 0 clamp(26px, 3vw, 34px); padding: 16px 20px;
+  border-radius: 16px; background: rgba(10, 20, 48, .04);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.dispo--ya { background: rgba(37, 158, 95, .07); box-shadow: inset 0 0 0 1px rgba(37, 158, 95, .28); }
+.dispo__icono { display: grid; place-items: center; flex: none; width: 22px; height: 22px; color: var(--gold); }
+.dispo--ya .dispo__icono { color: #1f8a53; }
+.dispo__icono svg { width: 20px; height: 20px; }
+.dispo__texto { display: grid; gap: 3px; }
+.dispo__texto b { font-size: 15px; font-weight: 600; }
+.dispo__texto span { font-size: 14px; line-height: 1.55; color: var(--muted); }
+
+/* En la tarjeta solo el estado, sin el plazo: ahí el espacio es escaso. */
+.prop-card__dispo {
+  display: flex; align-items: center; gap: 7px; margin: 10px 0 0;
+  font-size: 12.5px; letter-spacing: .01em; color: var(--muted);
+}
+.prop-card__dispo svg { width: 14px; height: 14px; flex: none; }
+.prop-card__dispo--ya { color: #1f8a53; font-weight: 600; }
+/* === FIN disponibilidad === */
+
 /* === INICIO recorrido 360° y video === */
 .medios { display: grid; gap: 16px; margin: 18px 0 clamp(32px, 4vw, 48px); }
 

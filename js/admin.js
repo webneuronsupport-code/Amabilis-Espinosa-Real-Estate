@@ -196,6 +196,8 @@
 
     valor("#f-title", actual.title); valor("#f-zone", actual.zone); valor("#f-location", actual.location);
     valor("#f-price", actual.price); valor("#f-tag", actual.tag);
+    $("#f-availability").value = actual.availability || "";
+    valor("#f-availability-note", actual.availability_note);
     valor("#f-beds", actual.beds); valor("#f-parking", actual.parking);
     // El medio baño se guardaba como decimal (2.5). Al abrir la ficha se
     // separa en los dos campos; al guardar queda ya en el formato nuevo.
@@ -214,6 +216,7 @@
     $("#f-featured").checked = !!actual.featured;
     const en = actual.en || {};
     valor("#f-en-title", en.title); valor("#f-en-tag", en.tag);
+    valor("#f-en-availability-note", en.availabilityNote);
     valor("#f-en-summary", en.summary); valor("#f-en-description", en.description);
 
     amenidades = [...(actual.amenities || [])];
@@ -641,6 +644,7 @@
     const en = {
       title: $("#f-en-title").value.trim(),
       tag: $("#f-en-tag").value.trim(),
+      availabilityNote: $("#f-en-availability-note").value.trim(),
       summary: $("#f-en-summary").value.trim(),
       description: $("#f-en-description").value.trim(),
     };
@@ -660,6 +664,8 @@
       featured: $("#f-featured").checked,
       published: $("#f-published").checked,
       tag: $("#f-tag").value.trim() || null,
+      availability: $("#f-availability").value || null,
+      availability_note: $("#f-availability-note").value.trim() || null,
       tour360: $("#f-tour360").value.trim() || null,
       video: $("#f-video").value.trim() || null,
       summary: $("#f-summary").value.trim(),

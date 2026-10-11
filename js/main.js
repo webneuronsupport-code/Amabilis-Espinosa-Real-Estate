@@ -212,6 +212,47 @@
   document.body.append(wa);
 
   /* ---------- Componentes ---------- */
+  // Disponibilidad: en cuánto se puede entregar. El texto corto va en las
+  // tarjetas y el largo en la ficha; si el asesor escribió un plazo concreto,
+  // ese sustituye a la frase por defecto.
+  const DISPONIBILIDAD = {
+    inmediata: {
+      corto: ["Entrega inmediata", "Immediate handover"],
+      detalle: ["Lista para habitarse.", "Ready to move in."],
+      icono: "check",
+    },
+    preventa: {
+      corto: ["Preventa", "Pre-sale"],
+      detalle: ["En construcción. Consulta la fecha estimada de entrega.",
+                "Under construction. Ask us for the estimated handover date."],
+      icono: "clock",
+    },
+    acondicionamiento: {
+      corto: ["En acondicionamiento", "Being refurbished"],
+      detalle: ["En trabajos de pintura y reparaciones antes de la entrega.",
+                "Painting and repair work underway before handover."],
+      icono: "clock",
+    },
+    ocupada: {
+      corto: ["Sujeta a desocupación", "Subject to vacancy"],
+      detalle: ["Actualmente ocupada: la entrega requiere un plazo.",
+                "Currently occupied: handover requires a waiting period."],
+      icono: "clock",
+    },
+  };
+
+  const dispo = (p) => {
+    const d = DISPONIBILIDAD[p.availability];
+    if (!d) return null; // vacío o un valor que el sitio no conoce
+    const nota = (p.availabilityNote || "").trim();
+    return {
+      corto: t(d.corto[0], d.corto[1]),
+      detalle: nota || t(d.detalle[0], d.detalle[1]),
+      icono: d.icono,
+      inmediata: p.availability === "inmediata",
+    };
+  };
+
   // Baños enteros y medios. Las fichas viejas guardaban el medio como decimal
   // (2.5 = dos y medio), así que se sigue leyendo ese formato además del campo
   // nuevo; una propiedad puede estar en cualquiera de los dos.
@@ -244,6 +285,8 @@
         <div class="prop-card__loc">${[T.tr(p.type), T.tr(p.zone)].filter(Boolean).join(" · ")}</div>
         <div class="prop-card__title">${p.title}</div>
         <div class="prop-card__specs">${specsHTML(p)}</div>
+        ${(() => { const d = dispo(p); return d
+          ? `<p class="prop-card__dispo${d.inmediata ? " prop-card__dispo--ya" : ""}">${I[d.icono]}${d.corto}</p>` : ""; })()}
         ${p.variants?.length > 1 ? `<p class="prop-card__modelos">${p.variants.length} ${t("modelos disponibles", "models available")}</p>` : ""}
         ${p.summary ? `<p class="prop-card__sum">${p.summary}</p>` : ""}
       </div>
@@ -540,6 +583,14 @@
           </div>
           <div class="specs" data-fade>${specs.map(([ic, v, l]) => `<div class="spec">${ic}<b>${v}</b><span>${l}</span></div>`).join("")}</div>
           <div class="detail__price" data-fade>${fmtPrice(p)}</div>
+          ${(() => { const d = dispo(p); return d ? `
+            <div class="dispo${d.inmediata ? " dispo--ya" : ""}" data-fade>
+              <span class="dispo__icono">${I[d.icono]}</span>
+              <span class="dispo__texto">
+                <b>${d.corto}</b>
+                <span>${d.detalle}</span>
+              </span>
+            </div>` : ""; })()}
           <h2 data-fade>Sobre la propiedad</h2>
           <p class="detail__desc" data-fade>${p.description}</p>
           ${bloqueMedios(p)}
