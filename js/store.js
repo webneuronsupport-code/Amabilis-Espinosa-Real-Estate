@@ -12,6 +12,7 @@
 (() => {
   const CFG = window.SUPABASE_CONFIG || {};
   const CACHE = "ae-propiedades";
+  const CACHE_BLOG = "ae-blog";
   const VIGENCIA = 10 * 60 * 1000; // 10 minutos
   const ESPERA = 2200; // ms antes de rendirse y usar el catálogo local
 
@@ -61,6 +62,31 @@
     });
   };
 
+  // El blog usa la misma forma que js/data.js para que main.js no note la diferencia
+  const normalizarBlog = (filas) => {
+    const en = (window.I18N || {}).lang === "en";
+    return filas.map((f) => {
+      const texto = (v) => (v == null ? "" : String(v));
+      const p = {
+        id: f.id, title: texto(f.title), category: texto(f.category),
+        date: texto(f.date), read: texto(f.read), cover: texto(f.cover),
+        excerpt: texto(f.excerpt), video: texto(f.video),
+        body: Array.isArray(f.body) ? f.body : [],
+      };
+      if (en && f.en) Object.assign(p, f.en);
+      return p;
+    });
+  };
+
+  const aplicarBlog = (filas) => {
+    if (!Array.isArray(filas) || !filas.length) return false;
+    if (typeof POSTS === "undefined") return false;
+    const nuevas = normalizarBlog(filas);
+    POSTS.length = 0;
+    nuevas.forEach((p) => POSTS.push(p));
+    return true;
+  };
+
   const aplicar = (filas) => {
     if (!Array.isArray(filas) || !filas.length) return false;
     const nuevas = normalizar(filas);
@@ -70,21 +96,21 @@
     return true;
   };
 
-  const leerCache = () => {
+  const leerCache = (clave = CACHE) => {
     try {
-      const raw = localStorage.getItem(CACHE);
+      const raw = localStorage.getItem(clave);
       if (!raw) return null;
       const { t, filas } = JSON.parse(raw);
       return { fresco: Date.now() - t < VIGENCIA, filas };
     } catch (e) { return null; }
   };
 
-  const guardarCache = (filas) => {
-    try { localStorage.setItem(CACHE, JSON.stringify({ t: Date.now(), filas })); } catch (e) {}
+  const guardarCache = (filas, clave = CACHE) => {
+    try { localStorage.setItem(clave, JSON.stringify({ t: Date.now(), filas })); } catch (e) {}
   };
 
-  const pedir = () => {
-    const url = `${CFG.url}/rest/v1/properties` +
+  const pedirTabla = (tabla) => {
+    const url = `${CFG.url}/rest/v1/${tabla}` +
       `?select=*&published=eq.true&order=position.asc,created_at.asc`;
     const ctrl = new AbortController();
     const corte = setTimeout(() => ctrl.abort(), ESPERA);
@@ -96,18 +122,30 @@
       .finally(() => clearTimeout(corte));
   };
 
+  const pedir = () => pedirTabla("properties");
+  // Si la tabla del blog no existe todavia, el sitio sigue con js/data.js
+  const pedirBlog = () => pedirTabla("posts").catch(() => null);
+
   if (!CFG.url || !CFG.anonKey) { arrancarSitio(); return; }
 
   const cache = leerCache();
+  const cacheBlog = leerCache(CACHE_BLOG);
 
+  // Con copia fresca de las dos, pinta al instante y revisa por detrás
   if (cache && cache.fresco && aplicar(cache.filas)) {
-    arrancarSitio();                                  // pinta ya
-    pedir().then(guardarCache).catch(() => {});       // y revisa por detrás
+    if (cacheBlog && cacheBlog.fresco) aplicarBlog(cacheBlog.filas);
+    arrancarSitio();
+    pedir().then(guardarCache).catch(() => {});
+    pedirBlog().then((f) => { if (f) guardarCache(f, CACHE_BLOG); }).catch(() => {});
     return;
   }
 
-  pedir()
-    .then((filas) => { aplicar(filas); guardarCache(filas); })
-    .catch(() => { if (cache) aplicar(cache.filas); }) // red caída: copia anterior
-    .finally(arrancarSitio);
+  Promise.all([
+    pedir()
+      .then((filas) => { aplicar(filas); guardarCache(filas); })
+      .catch(() => { if (cache) aplicar(cache.filas); }),
+    pedirBlog()
+      .then((filas) => { if (filas) { aplicarBlog(filas); guardarCache(filas, CACHE_BLOG); } })
+      .catch(() => { if (cacheBlog) aplicarBlog(cacheBlog.filas); }),
+  ]).finally(arrancarSitio);
 })();

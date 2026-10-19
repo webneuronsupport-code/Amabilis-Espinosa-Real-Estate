@@ -12,6 +12,8 @@
   const vistaConfig = $("#vistaConfig");
   const vistaLista = $("#vistaLista");
   const vistaEditor = $("#vistaEditor");
+  const vistaBlog = $("#vistaBlog");
+  const vistaEntrada = $("#vistaEntrada");
 
   if (!CFG.url || !CFG.anonKey) { vistaConfig.hidden = false; return; }
 
@@ -25,6 +27,9 @@
   let fotos = [];         // [{ src, alt }]
   let modelos = [];       // [{ name, built, beds, baths, parking, description, images[], alts[], en }]
   let sucio = false;      // hay cambios sin guardar
+  let entradas = [];      // blog completo (incluye borradores)
+  let entrada = null;     // entrada abierta en el editor
+  let entradaNueva = false;
 
   /* ---------- Utilidades ---------- */
   const dinero = (n) => (n == null || n === "" ? "—" : "$" + Number(n).toLocaleString("es-MX"));
@@ -725,6 +730,267 @@
     brindis("Propiedad eliminada");
     await cargar();
     vistaEditor.hidden = true; vistaLista.hidden = false;
+    window.scrollTo(0, 0);
+  });
+
+  /* ---------- Blog y Reels ---------- */
+  const CATEGORIAS = ["Noticias", "Guías", "Reels"];
+
+  // En la base el cuerpo es una lista de parrafos; en el formulario, texto
+  // separado por lineas en blanco, que es mas natural de escribir.
+  const cuerpoATexto = (lista) => (Array.isArray(lista) ? lista : []).join("\n\n");
+  const textoACuerpo = (txt) => String(txt || "").split(/\n\s*\n/).map((t) => t.trim()).filter(Boolean);
+
+  const cargarBlog = async () => {
+    const { data, error } = await sb.from("posts").select("*")
+      .order("position", { ascending: true }).order("created_at", { ascending: true });
+    if (error) {
+      $("#resumenBlog").textContent = error.message.includes("posts")
+        ? "Falta crear la tabla del blog: ejecuta sql/blog.sql en Supabase."
+        : "No se pudo cargar: " + error.message;
+      return;
+    }
+    entradas = data || [];
+    pintarBlog();
+  };
+
+  const pintarBlog = () => {
+    const texto = $("#buscarBlog").value.trim().toLowerCase();
+    const cat = $("#vistaBlog .segmento.es-activo").dataset.cat;
+    const lista = entradas.filter((e) => {
+      if (cat !== "todas" && e.category !== cat) return false;
+      if (!texto) return true;
+      return [e.title, e.excerpt, e.category].join(" ").toLowerCase().includes(texto);
+    });
+
+    const publicadas = entradas.filter((e) => e.published).length;
+    $("#resumenBlog").textContent =
+      `${entradas.length} en total · ${publicadas} visibles en el sitio · ${entradas.length - publicadas} en borrador`;
+
+    $("#listaBlog").innerHTML = lista.length ? lista.map((e) => `
+      <article class="tarjeta">
+        ${e.cover
+          ? `<img class="tarjeta__foto" src="${verFoto(e.cover, 300)}" alt="" loading="lazy">`
+          : '<div class="tarjeta__foto tarjeta__foto--vacia">Sin portada</div>'}
+        <div class="tarjeta__datos">
+          <h3 class="tarjeta__titulo">${e.title || "Sin título"}</h3>
+          <div class="tarjeta__meta">
+            ${[e.category, e.date || "sin fecha", e.read].filter(Boolean).join(" · ")}
+          </div>
+          <div class="tarjeta__meta" style="margin-top:6px">
+            <span class="insignia ${e.published ? "insignia--publicada" : "insignia--borrador"}">
+              ${e.published ? "Publicada" : "Borrador"}</span>
+            ${e.category === "Reels" && !e.video
+              ? '<span class="insignia insignia--borrador" title="El reel se verá como «Próximamente» hasta que tenga video">Sin video</span>' : ""}
+            ${e.published && !(e.en && (e.en.title || e.en.excerpt))
+              ? '<span class="insignia insignia--sin-ingles" title="En el sitio en inglés se mostrará el texto en español">Sin inglés</span>' : ""}
+          </div>
+        </div>
+        <div class="tarjeta__acciones">
+          <button class="btn btn--plano" data-editar="${e.id}" type="button">Editar</button>
+        </div>
+      </article>`).join("")
+      : `<p class="vacio">No hay entradas que coincidan.</p>`;
+  };
+
+  const mostrarSeccion = (cual) => {
+    $$(".pestana").forEach((b) => b.classList.toggle("es-activa", b.dataset.seccion === cual));
+    const blog = cual === "blog";
+    vistaLista.hidden = blog; vistaEditor.hidden = true;
+    vistaBlog.hidden = !blog; vistaEntrada.hidden = true;
+    window.scrollTo(0, 0);
+    if (blog && !entradas.length) cargarBlog();
+  };
+
+  $$(".pestana").forEach((b) => b.addEventListener("click", async () => {
+    if (sucio && !(await confirmar("Hay cambios sin guardar",
+      "Si cambias de sección se perderán. ¿Continuar?", "Sí, descartar"))) return;
+    sucio = false;
+    mostrarSeccion(b.dataset.seccion);
+  }));
+
+  $("#buscarBlog").addEventListener("input", pintarBlog);
+  $$("#vistaBlog .segmento").forEach((b) => b.addEventListener("click", () => {
+    $$("#vistaBlog .segmento").forEach((o) => o.classList.remove("es-activo"));
+    b.classList.add("es-activo");
+    pintarBlog();
+  }));
+
+  const pintarPortada = () => {
+    const c = entrada?.cover;
+    $("#portadaEntrada").innerHTML = c
+      ? `<img src="${verFoto(c, 600)}" alt="Portada de la entrada">`
+      : `<p class="vacio">Sin portada</p>`;
+    $("#btnQuitarPortada").hidden = !c;
+  };
+
+  function abrirEntrada(e, nueva = false) {
+    entradaNueva = nueva || !e;
+    entrada = e ? { ...e } : {
+      id: "", title: "", category: "Noticias", date: new Date().toISOString().slice(0, 10),
+      read: "3 min", cover: "", excerpt: "", video: "", body: [], en: null,
+      published: true, position: (entradas.at(-1)?.position || entradas.length * 10) + 10,
+    };
+
+    $("#tituloEntrada").textContent = entradaNueva ? "Nueva entrada" : "Editar entrada";
+    $("#btnEliminarEntrada").hidden = entradaNueva;
+
+    valor("#e-title", entrada.title);
+    $("#e-category").value = CATEGORIAS.includes(entrada.category) ? entrada.category : "Noticias";
+    valor("#e-date", entrada.date ? String(entrada.date).slice(0, 10) : "");
+    valor("#e-read", entrada.read);
+    valor("#e-excerpt", entrada.excerpt);
+    valor("#e-video", entrada.video);
+    valor("#e-body", cuerpoATexto(entrada.body));
+    valor("#e-position", entrada.position);
+    $("#e-published").checked = entrada.published !== false;
+
+    const en = entrada.en || {};
+    valor("#e-en-title", en.title);
+    valor("#e-en-excerpt", en.excerpt);
+    valor("#e-en-body", cuerpoATexto(en.body));
+
+    pintarPortada();
+    alternarVideo();
+    avisar("#avisoEntrada", "");
+    avisar("#avisoPortada", "");
+    sucio = false;
+    vistaBlog.hidden = true; vistaEntrada.hidden = false;
+    window.scrollTo(0, 0);
+  }
+
+  // El bloque de video solo tiene sentido en los reels
+  const alternarVideo = () => { $("#bloqueVideo").hidden = $("#e-category").value !== "Reels"; };
+  $("#e-category").addEventListener("change", () => { alternarVideo(); sucio = true; });
+
+  $("#listaBlog").addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-editar]");
+    if (!b) return;
+    abrirEntrada(entradas.find((x) => x.id === b.dataset.editar));
+  });
+
+  $("#btnNuevaEntrada").addEventListener("click", () => abrirEntrada(null, true));
+
+  $("#btnVolverBlog").addEventListener("click", async () => {
+    if (sucio && !(await confirmar("Hay cambios sin guardar",
+      "Si vuelves al listado se perderán. ¿Continuar?", "Sí, descartar"))) return;
+    sucio = false;
+    vistaEntrada.hidden = true; vistaBlog.hidden = false;
+    window.scrollTo(0, 0);
+  });
+
+  $("#formEntrada").addEventListener("input", () => { sucio = true; });
+
+  /* ---------- Portada de la entrada ---------- */
+  $("#btnPortada").addEventListener("click", () => $("#archivoPortada").click());
+  $("#archivoPortada").addEventListener("change", async (ev) => {
+    const archivo = ev.target.files?.[0];
+    ev.target.value = "";
+    if (!archivo) return;
+    avisar("#avisoPortada", "Subiendo portada…");
+    const { urls } = await subirArchivos([archivo], `blog/${entrada.id || "nueva"}`,
+      (t) => avisar("#avisoPortada", t));
+    if (!urls.length) { avisar("#avisoPortada", "No se pudo subir la portada."); return; }
+    entrada.cover = urls[0];
+    pintarPortada();
+    avisar("#avisoPortada", "Portada lista.", true);
+    sucio = true;
+  });
+
+  $("#btnQuitarPortada").addEventListener("click", () => {
+    entrada.cover = "";
+    pintarPortada();
+    sucio = true;
+  });
+
+  /* ---------- Video del reel ---------- */
+  $("#btnVideoEntrada").addEventListener("click", () => $("#archivoVideoEntrada").click());
+  $("#archivoVideoEntrada").addEventListener("change", async (ev) => {
+    const archivo = ev.target.files?.[0];
+    ev.target.value = "";
+    if (!archivo) return;
+    const MB = archivo.size / 1048576;
+    if (MB > 45) {
+      avisar("#avisoVideoEntrada",
+        `Ese video pesa ${MB.toFixed(0)} MB y el límite por archivo es 45 MB. Súbelo a YouTube y pega el enlace.`);
+      return;
+    }
+    avisar("#avisoVideoEntrada", "Subiendo video…");
+    const ext = (archivo.name.split(".").pop() || "mp4").toLowerCase().replace(/[^a-z0-9]/g, "");
+    const ruta = `blog/${entrada.id || "nueva"}/reel-${Date.now().toString(36)}.${ext}`;
+    const { error } = await sb.storage.from(BUCKET).upload(ruta, archivo, { cacheControl: "31536000", upsert: false });
+    if (error) { avisar("#avisoVideoEntrada", "No se pudo subir: " + error.message); return; }
+    $("#e-video").value = sb.storage.from(BUCKET).getPublicUrl(ruta).data.publicUrl;
+    avisar("#avisoVideoEntrada", "Video listo.", true);
+    sucio = true;
+  });
+
+  /* ---------- Guardar la entrada ---------- */
+  $("#btnGuardarEntrada").addEventListener("click", async () => {
+    const titulo = $("#e-title").value.trim();
+    if (!titulo) { avisar("#avisoEntrada", "Ponle un título a la entrada."); $("#e-title").focus(); return; }
+
+    const en = {
+      title: $("#e-en-title").value.trim(),
+      excerpt: $("#e-en-excerpt").value.trim(),
+      body: textoACuerpo($("#e-en-body").value),
+    };
+    const hayEn = en.title || en.excerpt || en.body.length;
+
+    const idLibreBlog = (base) => {
+      let id = base || `entrada-${Date.now().toString(36)}`;
+      let n = 2;
+      while (entradas.some((e) => e.id === id && e.id !== entrada.id)) id = `${base}-${n++}`;
+      return id;
+    };
+
+    const fila = {
+      id: entrada.id || idLibreBlog(aSlug(titulo)),
+      title: titulo,
+      category: $("#e-category").value,
+      date: $("#e-date").value || null,
+      read: $("#e-read").value.trim() || null,
+      cover: entrada.cover || null,
+      excerpt: $("#e-excerpt").value.trim(),
+      video: $("#e-category").value === "Reels" ? ($("#e-video").value.trim() || null) : null,
+      body: textoACuerpo($("#e-body").value),
+      en: hayEn ? en : null,
+      published: $("#e-published").checked,
+      position: Number($("#e-position").value) || 0,
+    };
+
+    avisar("#avisoEntrada", "Guardando…");
+    const { error } = await sb.from("posts").upsert(fila).select();
+    if (error) { avisar("#avisoEntrada", "No se pudo guardar: " + error.message); return; }
+
+    sucio = false;
+    entrada = { ...fila };
+    entradaNueva = false;
+    $("#btnEliminarEntrada").hidden = false;
+    $("#tituloEntrada").textContent = "Editar entrada";
+    brindis("Entrada guardada");
+    await cargarBlog();
+    avisar("#avisoEntrada", "");
+  });
+
+  /* ---------- Eliminar la entrada ---------- */
+  $("#btnEliminarEntrada").addEventListener("click", async () => {
+    if (!entrada?.id) return;
+    const ok = await confirmar("¿Eliminar la entrada?",
+      `Se quitará «${entrada.title}» del sitio. Esta acción no se puede deshacer.`, "Sí, eliminar");
+    if (!ok) return;
+
+    const propias = [entrada.cover, entrada.video]
+      .filter((u) => typeof u === "string" && u.includes(`/${BUCKET}/`));
+    if (propias.length) await borrarDelAlmacen(propias);
+
+    const { error } = await sb.from("posts").delete().eq("id", entrada.id);
+    if (error) { avisar("#avisoEntrada", "No se pudo eliminar: " + error.message); return; }
+
+    sucio = false;
+    brindis("Entrada eliminada");
+    await cargarBlog();
+    vistaEntrada.hidden = true; vistaBlog.hidden = false;
     window.scrollTo(0, 0);
   });
 

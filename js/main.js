@@ -291,10 +291,16 @@
         ${p.summary ? `<p class="prop-card__sum">${p.summary}</p>` : ""}
       </div>
     </a>`;
+  // Acepta tanto un id de Unsplash como una dirección subida desde el panel,
+  // y tolera que la entrada no tenga portada todavía.
+  const portadaPost = (p, w) => (p.cover
+    ? `<img src="${imgSrc(p.cover, w)}" alt="${p.title}" loading="lazy">`
+    : `<span class="post-card__sinfoto" aria-hidden="true"></span>`);
+
   const postCard = (p) => `
     <a href="post.html?id=${p.id}" class="post-card" data-cursor="${p.category === "Reels" ? "Play" : "Leer"}">
       <div class="post-card__media">
-        <img src="${U(p.cover, 1000)}" alt="${p.title}" loading="lazy">
+        ${portadaPost(p, 1000)}
         <span class="pill">${p.category}</span>
         ${p.category === "Reels" ? `<span class="post-card__play">${I.play}</span>` : ""}
       </div>
@@ -480,6 +486,220 @@
     }));
   };
 
+  /* ---------- Enlaces internos con desplazamiento suave ---------- */
+  // El CSS `scroll-behavior: smooth` no se aplica porque el <body> lleva
+  // overflow propio, así que la animación la hacemos aquí.
+  const suavizarAnclas = () => {
+    const DURACION = 900;
+    $$('a[href^="#"]').forEach((a) => {
+      const destinoId = a.getAttribute("href").slice(1);
+      if (!destinoId) return;
+      a.addEventListener("click", (e) => {
+        const destino = document.getElementById(destinoId);
+        if (!destino) return;
+        e.preventDefault();
+
+        const margen = parseInt(getComputedStyle(destino).scrollMarginTop, 10) || 0;
+        const desde = window.scrollY;
+        const hasta = desde + destino.getBoundingClientRect().top - margen;
+
+        if (reduced) { window.scrollTo({ top: hasta, behavior: "instant" }); history.replaceState(null, "", `#${destinoId}`); return; }
+
+        const t0 = performance.now();
+        const suave = (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+        const paso = (ahora) => {
+          const k = Math.min(1, (ahora - t0) / DURACION);
+          window.scrollTo({ top: desde + (hasta - desde) * suave(k), behavior: "instant" });
+          if (k < 1) requestAnimationFrame(paso);
+          else history.replaceState(null, "", `#${destinoId}`);
+        };
+        requestAnimationFrame(paso);
+      });
+    });
+  };
+
+  /* ---------- Carrusel de reels ---------- */
+  const carruselReels = () => {
+    const pista = $("#reelsPista");
+    if (!pista) return;
+    const reels = POSTS.filter((p) => p.category === "Reels");
+    if (!reels.length) { $("#reels")?.remove(); return; }
+
+    const escenario = $("#reelsEscenario");
+    const puntos = $("#reelsPuntos");
+    const prev = $(".reels__flecha--prev", escenario);
+    const next = $(".reels__flecha--next", escenario);
+    $("#reelsTotal").textContent = String(reels.length).padStart(2, "0");
+
+    pista.innerHTML = reels.map((p, i) => {
+      const v = leerVideo(p.video);
+      return `
+      <article class="reel-card${v ? "" : " reel-card--pendiente"}" data-i="${i}" aria-roledescription="reel">
+        <button class="reel-card__enlace" type="button" data-cursor="${v ? "Play" : ""}" data-loc="reel-${i}"
+                aria-label="${v ? t("Reproducir", "Play") : t("Próximamente", "Coming soon")}: ${p.title}">
+          <span class="reel-card__media">
+            ${p.cover ? `<img src="${imgSrc(p.cover, 700)}" alt="${p.title}" loading="${i ? "lazy" : "eager"}">` : ""}
+            <span class="reel-card__velo"></span>
+          </span>
+          ${v ? `<span class="reel-card__play">${I.play}</span>` : ""}
+          <span class="reel-card__texto"><span>${v ? p.read : t("Próximamente", "Coming soon")}</span></span>
+        </button>
+      </article>`;
+    }).join("");
+
+    puntos.innerHTML = reels.map((_, i) =>
+      `<button class="reels__punto" type="button" role="tab" data-i="${i}" aria-label="${t("Reel", "Reel")} ${i + 1}"></button>`).join("");
+
+    // Ventana de reproduccion: el reel se ve aqui mismo, sin cambiar de pagina.
+    const ventana = document.createElement("div");
+    ventana.className = "reel reel--vertical";
+    ventana.setAttribute("aria-hidden", "true");
+    ventana.innerHTML = `
+      <div class="reel__backdrop"></div>
+      <div class="reel__window" role="dialog" aria-modal="true" aria-label="${t("Reel", "Reel")}">
+        <div class="reel__media"></div>
+        <div class="reel__actions">
+          <button class="reel__close" type="button" aria-label="${t("Cerrar video", "Close video")}">${I.close}</button>
+        </div>
+      </div>`;
+    document.body.append(ventana);
+    const lienzo = $(".reel__media", ventana);
+    let abierta = false;
+    let devolverFoco = null;
+
+    const cerrarReel = () => {
+      if (!abierta) return;
+      abierta = false;
+      lienzo.innerHTML = ""; // detiene el video o descarga el iframe
+      ventana.classList.remove("is-open");
+      ventana.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("is-locked");
+      devolverFoco?.focus({ preventScroll: true });
+    };
+
+    const abrirReel = (i, origen) => {
+      const p = reels[i];
+      const v = leerVideo(p.video);
+      if (!v) return; // sin enlace todavia: no hay nada que reproducir
+      if (v.tipo === "enlace") { window.open(v.url, "_blank", "noopener"); return; }
+
+      lienzo.innerHTML = "";
+      if (v.tipo === "archivo") {
+        const video = document.createElement("video");
+        video.src = v.url; video.controls = true; video.autoplay = true;
+        video.playsInline = true; video.loop = true;
+        lienzo.appendChild(video);
+        video.play().catch(() => {});
+      } else {
+        const marco = document.createElement("iframe");
+        marco.src = v.embed; marco.title = p.title; marco.allowFullscreen = true;
+        marco.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+        lienzo.appendChild(marco);
+      }
+
+      abierta = true;
+      devolverFoco = origen || null;
+      ventana.classList.add("is-open");
+      ventana.setAttribute("aria-hidden", "false");
+      document.body.classList.add("is-locked");
+      track("play_video", { video_location: `reel-${i}` });
+      $(".reel__close", ventana).focus({ preventScroll: true });
+    };
+
+    $(".reel__close", ventana).addEventListener("click", cerrarReel);
+    $(".reel__backdrop", ventana).addEventListener("click", cerrarReel);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrarReel(); });
+
+    const tarjetas = $$(".reel-card", pista);
+    const bolitas = $$(".reels__punto", puntos);
+    let activo = 0;
+
+    // Solo el reel centrado carga su video: con varios a la vez el móvil sufre.
+    const montarVideo = (tarjeta, p) => {
+      if (tarjeta.dataset.montado) return;
+      const v = leerVideo(p.video);
+      if (!v) return; // sin enlace todavía: se queda la portada
+      tarjeta.dataset.montado = "1";
+      const media = $(".reel-card__media", tarjeta);
+      if (v.tipo === "archivo") {
+        const video = document.createElement("video");
+        video.src = v.url; video.muted = true; video.loop = true;
+        video.autoplay = true; video.playsInline = true;
+        media.appendChild(video);
+      } else if (v.embed) {
+        const marco = document.createElement("iframe");
+        marco.src = v.embed; marco.allow = "autoplay; encrypted-media; picture-in-picture";
+        marco.allowFullscreen = true; marco.loading = "lazy"; marco.title = p.title;
+        media.appendChild(marco);
+      }
+    };
+
+    const colocar = () => {
+      const paso = tarjetas[0].offsetWidth * 0.82 + 24;
+      tarjetas.forEach((c, i) => {
+        const d = i - activo, abs = Math.abs(d);
+        c.style.transform = `translate(-50%, -50%) translateX(${d * paso}px) scale(${Math.max(0.6, 1 - abs * 0.16)})`;
+        c.style.opacity = abs > 2 ? "0" : String(1 - abs * 0.3);
+        c.style.zIndex = String(20 - abs);
+        c.classList.toggle("is-activa", d === 0);
+        // Las tarjetas laterales no deben recibir foco ni lectores de pantalla
+        c.inert = d !== 0;
+        c.setAttribute("aria-hidden", d !== 0 ? "true" : "false");
+      });
+      // La ficha lateral acompaña al reel centrado
+      const p = reels[activo];
+      const limpio = p.title.replace(/^Reel:\s*/i, "");
+      $("#reelsNum").textContent = String(activo + 1).padStart(2, "0");
+      $("#reelsFichaTitulo").textContent = limpio.charAt(0).toUpperCase() + limpio.slice(1);
+      $("#reelsFichaTexto").textContent = p.excerpt;
+      const cta = $("#reelsCta");
+      const hayVideo = !!leerVideo(p.video);
+      cta.hidden = !hayVideo;
+      cta.onclick = (e) => { e.preventDefault(); abrirReel(activo, cta); };
+      bolitas.forEach((b, i) => {
+        b.classList.toggle("is-activo", i === activo);
+        b.setAttribute("aria-selected", i === activo ? "true" : "false");
+      });
+      prev.disabled = activo === 0;
+      next.disabled = activo === reels.length - 1;
+      montarVideo(tarjetas[activo], reels[activo]);
+    };
+
+    const ir = (i) => { activo = Math.max(0, Math.min(reels.length - 1, i)); colocar(); };
+
+    prev.addEventListener("click", () => ir(activo - 1));
+    next.addEventListener("click", () => ir(activo + 1));
+    bolitas.forEach((b) => b.addEventListener("click", () => ir(+b.dataset.i)));
+
+    // La lateral se centra; la del centro reproduce en la misma pagina
+    tarjetas.forEach((c) => {
+      const boton = $(".reel-card__enlace", c);
+      boton.addEventListener("click", () => {
+        const i = +c.dataset.i;
+        if (i !== activo) ir(i);
+        else abrirReel(i, boton);
+      });
+    });
+
+    escenario.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") { e.preventDefault(); ir(activo - 1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); ir(activo + 1); }
+    });
+
+    // Arrastrar con el dedo o el ratón
+    let x0 = null;
+    escenario.addEventListener("pointerdown", (e) => { x0 = e.clientX; });
+    escenario.addEventListener("pointerup", (e) => {
+      if (x0 === null) return;
+      const dx = e.clientX - x0; x0 = null;
+      if (Math.abs(dx) > 45) ir(activo + (dx < 0 ? 1 : -1));
+    });
+    escenario.addEventListener("pointercancel", () => { x0 = null; });
+
+    window.addEventListener("resize", colocar);
+    colocar();
+  };
+
   /* ---------- Render por página ---------- */
   const renderers = {
     home() {
@@ -493,7 +713,7 @@
           <span class="zone__arrow">${I.arrow}</span>
         </a>`).join("");
       $("#zonePreview").innerHTML = ZONES.map((z) => `<img src="${U(z.img, 700)}" alt="">`).join("");
-      $("#blogPreview").innerHTML = POSTS.slice(0, 3).map(postCard).join("");
+      $("#blogPreview").innerHTML = POSTS.filter((p) => p.category !== "Reels").slice(0, 3).map(postCard).join("");
       const zoneSel = $("#s-zona");
       zoneSel.innerHTML += ZONES.map((z) => `<option value="${z.name}">${z.name}</option>`).join("");
       $("#heroSearch").addEventListener("submit", (e) => {
@@ -676,12 +896,15 @@
     },
 
     blog() {
+      carruselReels();
+      suavizarAnclas();
       const grid = $("#blogGrid");
       const chips = $$("#b-cat .chip");
       let cat = params.get("cat") || "";
       const draw = () => {
         chips.forEach((c) => c.classList.toggle("is-active", c.dataset.value === cat));
-        const list = POSTS.filter((p) => !cat || p.category === cat);
+        // Los reels ya tienen su carrusel arriba; aquí solo lo que se lee.
+        const list = POSTS.filter((p) => p.category !== "Reels").filter((p) => !cat || p.category === cat);
         grid.classList.toggle("blog-grid--feature", !cat);
         grid.innerHTML = list.map(postCard).join("");
         bindCursorTargets();
@@ -699,17 +922,17 @@
       document.title = `${p.title} | Blog Amábilis & Espinosa`;
       $('meta[name="description"]').setAttribute("content", p.excerpt);
       $("#postHero").innerHTML = `
-        <div class="page-hero__bg"><img src="${U(p.cover, 2000)}" alt=""></div>
+        ${p.cover ? `<div class="page-hero__bg"><img src="${imgSrc(p.cover, 2000)}" alt=""></div>` : ""}
         <div class="container">
           <nav class="breadcrumbs"><a href="index.html">Inicio</a>/<a href="blog.html">Blog</a>/<span>${p.category}</span></nav>
-          <h1 data-split style="font-size:clamp(44px,7vw,110px);max-width:16ch">${p.title}</h1>
-          <p class="lead">${fmtDate(p.date)} · ${p.read} ${t("de lectura", "read")}</p>
+          <h1 class="post-hero__titulo" data-fade>${p.title}</h1>
+          <p class="lead" data-fade>${fmtDate(p.date)} · ${p.read} ${t("de lectura", "read")}</p>
         </div>`;
       let embed = "";
       if (p.category === "Reels") {
         embed = p.video
           ? `<div class="video-embed"><iframe src="${p.video}" allowfullscreen loading="lazy" title="${p.title}"></iframe></div>`
-          : `<div class="video-embed" data-fade><img src="${U(p.cover, 800)}" alt=""><div>${I.play.replace("<svg", '<svg width="48" height="48"')}<p style="color:var(--cream);font-size:15px;margin-top:12px">Mira el reel completo en nuestras redes</p>
+          : `<div class="video-embed" data-fade>${p.cover ? `<img src="${imgSrc(p.cover, 800)}" alt="">` : ""}<div>${I.play.replace("<svg", '<svg width="48" height="48"')}<p style="color:var(--cream);font-size:15px;margin-top:12px">Mira el reel completo en nuestras redes</p>
              <a class="btn btn--gold btn--sm" href="${SITE.instagram}" target="_blank" rel="noopener"><span class="btn__label"><span>Ver en Instagram</span><span>Ver en Instagram</span></span>${I.arrow}</a></div></div>`;
       }
       $("#article").innerHTML = embed + p.body.map((b) => b.startsWith("## ") ? `<h2 data-fade>${b.slice(3)}</h2>` : `<p data-fade>${b}</p>`).join("") + `
@@ -717,7 +940,7 @@
           <a class="chip" style="display:inline-flex;align-items:center" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(p.title + " " + location.href)}">WhatsApp</a>
           <a class="chip" style="display:inline-flex;align-items:center" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(location.href)}">Facebook</a>
         </div>`;
-      $("#related").innerHTML = POSTS.filter((x) => x.id !== p.id).slice(0, 3).map(postCard).join("");
+      $("#related").innerHTML = POSTS.filter((x) => x.id !== p.id && x.category !== "Reels").slice(0, 3).map(postCard).join("");
     },
 
     contacto() {
