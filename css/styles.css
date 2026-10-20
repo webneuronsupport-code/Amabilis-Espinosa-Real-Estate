@@ -860,6 +860,32 @@ em, .serif-i { font-family: var(--f-display); font-style: italic; color: var(--g
   display: block; height: min(74svh, 760px); width: auto; max-width: min(86vw, 430px);
   aspect-ratio: 9 / 16; border: 0; background: #000;
 }
+/* El texto del reel acompaña al video: al lado en escritorio, debajo en móvil */
+.reel__escena { display: flex; align-items: stretch; gap: clamp(16px, 2.4vw, 30px); }
+.reel--vertical .reel__ficha {
+  display: none; width: min(34vw, 340px); max-height: min(74svh, 760px);
+  overflow-y: auto; padding-right: 6px; color: var(--cream); text-align: left;
+}
+.reel--vertical .reel__ficha h2 {
+  font-family: var(--f-display); font-size: clamp(22px, 2.2vw, 30px);
+  line-height: 1.12; margin: 0 0 10px;
+}
+.reel--vertical .reel__ficha h3 {
+  font-family: var(--f-display); font-size: 19px; font-weight: 500;
+  margin: 20px 0 6px; color: var(--gold-soft);
+}
+.reel--vertical .reel__ficha p { margin: 0 0 12px; font-size: 14.5px; line-height: 1.65; color: rgba(247,242,234,.72); }
+.reel--vertical .reel__ficha .reel__resumen { color: rgba(247,242,234,.9); }
+.reel--vertical .reel__ficha:not(:empty) { display: block; }
+@media (max-width: 900px) {
+  .reel__escena { flex-direction: column; align-items: center; }
+  .reel--vertical .reel__ficha { width: min(86vw, 430px); max-height: 22svh; }
+  /* Con el texto debajo, el video tiene que ceder altura o no cabe el conjunto */
+  .reel--vertical .reel__media video,
+  .reel--vertical .reel__media iframe { height: min(50svh, 440px); }
+  .reel--vertical .reel__window { max-height: 100svh; overflow-y: auto; }
+}
+
 .reel__actions { display: flex; align-items: center; gap: 12px; }
 .reel__close {
   width: 56px; height: 56px; border-radius: 50%; color: var(--cream); display: grid; place-items: center;

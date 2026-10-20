@@ -557,7 +557,10 @@
     ventana.innerHTML = `
       <div class="reel__backdrop"></div>
       <div class="reel__window" role="dialog" aria-modal="true" aria-label="${t("Reel", "Reel")}">
-        <div class="reel__media"></div>
+        <div class="reel__escena">
+          <div class="reel__media"></div>
+          <aside class="reel__ficha" id="reelVentanaFicha"></aside>
+        </div>
         <div class="reel__actions">
           <button class="reel__close" type="button" aria-label="${t("Cerrar video", "Close video")}">${I.close}</button>
         </div>
@@ -575,6 +578,19 @@
       ventana.setAttribute("aria-hidden", "true");
       document.body.classList.remove("is-locked");
       devolverFoco?.focus({ preventScroll: true });
+      colocar(); // la tarjeta recupera su vista previa
+    };
+
+    // Al abrir el reproductor hay que descargar la copia que suena en la
+    // tarjeta: si no, se oyen las dos a la vez (el embebido no va en silencio).
+    const callarTarjetas = () => {
+      tarjetas.forEach((c) => {
+        $$("video, iframe", c).forEach((n) => {
+          if (n.tagName === "VIDEO") { n.pause(); n.removeAttribute("src"); n.load(); }
+          n.remove();
+        });
+        delete c.dataset.montado;
+      });
     };
 
     const abrirReel = (i, origen) => {
@@ -583,6 +599,7 @@
       if (!v) return; // sin enlace todavia: no hay nada que reproducir
       if (v.tipo === "enlace") { window.open(v.url, "_blank", "noopener"); return; }
 
+      callarTarjetas();
       lienzo.innerHTML = "";
       if (v.tipo === "archivo") {
         const video = document.createElement("video");
@@ -596,6 +613,16 @@
         marco.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
         lienzo.appendChild(marco);
       }
+
+      // El texto que el asesor escribió para el reel acompaña al video
+      const limpio = p.title.replace(/^Reel:\s*/i, "");
+      const parrafos = (p.body || []).flatMap((b) => String(b).split("\n"))
+        .map((b) => b.trim()).filter(Boolean);
+      $("#reelVentanaFicha").innerHTML = `
+        <h2>${limpio.charAt(0).toUpperCase() + limpio.slice(1)}</h2>
+        ${p.excerpt ? `<p class="reel__resumen">${p.excerpt}</p>` : ""}
+        ${parrafos.map((b) => b.startsWith("## ")
+          ? `<h3>${b.slice(3)}</h3>` : `<p>${b}</p>`).join("")}`;
 
       abierta = true;
       devolverFoco = origen || null;
@@ -627,8 +654,10 @@
         video.autoplay = true; video.playsInline = true;
         media.appendChild(video);
       } else if (v.embed) {
+        // La vista previa va muda: el sonido es cosa del reproductor
+        const mudo = v.embed + (v.embed.includes("?") ? "&" : "?") + "mute=1&muted=1";
         const marco = document.createElement("iframe");
-        marco.src = v.embed; marco.allow = "autoplay; encrypted-media; picture-in-picture";
+        marco.src = mudo; marco.allow = "autoplay; encrypted-media; picture-in-picture";
         marco.allowFullscreen = true; marco.loading = "lazy"; marco.title = p.title;
         media.appendChild(marco);
       }
@@ -935,7 +964,10 @@
           : `<div class="video-embed" data-fade>${p.cover ? `<img src="${imgSrc(p.cover, 800)}" alt="">` : ""}<div>${I.play.replace("<svg", '<svg width="48" height="48"')}<p style="color:var(--cream);font-size:15px;margin-top:12px">Mira el reel completo en nuestras redes</p>
              <a class="btn btn--gold btn--sm" href="${SITE.instagram}" target="_blank" rel="noopener"><span class="btn__label"><span>Ver en Instagram</span><span>Ver en Instagram</span></span>${I.arrow}</a></div></div>`;
       }
-      $("#article").innerHTML = embed + p.body.map((b) => b.startsWith("## ") ? `<h2 data-fade>${b.slice(3)}</h2>` : `<p data-fade>${b}</p>`).join("") + `
+      // Un párrafo guardado antes puede traer saltos dentro: se separan aquí
+      // para que no quede todo en un bloque.
+      const parrafos = p.body.flatMap((b) => String(b).split("\n")).map((b) => b.trim()).filter(Boolean);
+      $("#article").innerHTML = embed + parrafos.map((b) => b.startsWith("## ") ? `<h2 data-fade>${b.slice(3)}</h2>` : `<p data-fade>${b}</p>`).join("") + `
         <div class="article__share">${t("Compartir:", "Share:")}
           <a class="chip" style="display:inline-flex;align-items:center" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(p.title + " " + location.href)}">WhatsApp</a>
           <a class="chip" style="display:inline-flex;align-items:center" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(location.href)}">Facebook</a>

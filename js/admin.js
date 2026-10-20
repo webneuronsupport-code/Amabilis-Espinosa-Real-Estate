@@ -738,8 +738,11 @@
 
   // En la base el cuerpo es una lista de parrafos; en el formulario, texto
   // separado por lineas en blanco, que es mas natural de escribir.
-  const cuerpoATexto = (lista) => (Array.isArray(lista) ? lista : []).join("\n\n");
-  const textoACuerpo = (txt) => String(txt || "").split(/\n\s*\n/).map((t) => t.trim()).filter(Boolean);
+  // Un párrafo por línea, tal como dice la ayuda del campo. Las líneas en
+  // blanco se descartan, así que dejar aire entre párrafos tampoco estorba.
+  const cuerpoATexto = (lista) => (Array.isArray(lista) ? lista : [])
+    .flatMap((t) => String(t).split("\n")).join("\n");
+  const textoACuerpo = (txt) => String(txt || "").split("\n").map((t) => t.trim()).filter(Boolean);
 
   const cargarBlog = async () => {
     const { data, error } = await sb.from("posts").select("*")

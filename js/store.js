@@ -131,9 +131,10 @@
   const cache = leerCache();
   const cacheBlog = leerCache(CACHE_BLOG);
 
-  // Con copia fresca de las dos, pinta al instante y revisa por detrás
-  if (cache && cache.fresco && aplicar(cache.filas)) {
-    if (cacheBlog && cacheBlog.fresco) aplicarBlog(cacheBlog.filas);
+  // El atajo solo vale si las DOS copias están frescas. Si falta la del blog
+  // y arrancamos igual, el sitio pintaría las entradas viejas de js/data.js.
+  if (cache && cache.fresco && cacheBlog && cacheBlog.fresco
+      && aplicar(cache.filas) && aplicarBlog(cacheBlog.filas)) {
     arrancarSitio();
     pedir().then(guardarCache).catch(() => {});
     pedirBlog().then((f) => { if (f) guardarCache(f, CACHE_BLOG); }).catch(() => {});
